@@ -5,4 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="markdig\**" />
+    <EmbeddedResource Remove="markdig\**" />
+    <None Remove="markdig\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="markdig\src\Markdig\Markdig.csproj" />
+  </ItemGroup>
+
 </Project>

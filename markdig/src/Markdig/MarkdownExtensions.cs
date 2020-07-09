@@ -31,6 +31,7 @@ using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Extensions.TextRenderer;
 using Markdig.Extensions.Yaml;
+using Markdig.Extensions.Sections;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -79,6 +80,7 @@ namespace Markdig
                 .UseAutoIdentifiers()
                 .UseCitations()
                 .UseCustomContainers()
+                .UseSections()
                 .UseDefinitionLists()
                 .UseEmphasisExtras()
                 .UseFigures()
@@ -199,6 +201,17 @@ namespace Markdig
         public static MarkdownPipelineBuilder UseCustomContainers(this MarkdownPipelineBuilder pipeline)
         {
             pipeline.Extensions.AddIfNotAlready<CustomContainerExtension>();
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the section extension.
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseSections(this MarkdownPipelineBuilder pipeline)
+        {
+            pipeline.Extensions.AddIfNotAlready<SectionExtension>();
             return pipeline;
         }
 
@@ -593,6 +606,9 @@ namespace Markdig
                         break;
                     case "tasklists":
                         pipeline.UseTaskLists();
+                        break;
+                    case "sections":
+                        pipeline.UseSections();
                         break;
                     case "diagrams":
                         pipeline.UseDiagrams();
