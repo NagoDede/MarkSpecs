@@ -16,6 +16,12 @@
     <ProjectReference Include="markdig\src\Markdig\Markdig.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="tests\test_mocodo.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="robocopy $(SolutionDir)mocodo $(TargetDir)mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md" />
   </Target>
