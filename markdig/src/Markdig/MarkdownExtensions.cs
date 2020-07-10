@@ -32,6 +32,7 @@ using Markdig.Extensions.TaskLists;
 using Markdig.Extensions.TextRenderer;
 using Markdig.Extensions.Yaml;
 using Markdig.Extensions.Sections;
+using Markdig.Extensions.Mocodo;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -88,6 +89,7 @@ namespace Markdig
                 .UseFootnotes()
                 .UseGridTables()
                 .UseMathematics()
+                .UseMocodo(new MocodoEnvironment())
                 .UseMediaLinks()
                 .UsePipeTables()
                 .UseListExtras()
@@ -212,6 +214,22 @@ namespace Markdig
         public static MarkdownPipelineBuilder UseSections(this MarkdownPipelineBuilder pipeline)
         {
             pipeline.Extensions.AddIfNotAlready<SectionExtension>();
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the Mocodo diagram <see cref="http://www.mocodo.net/"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseMocodo(this MarkdownPipelineBuilder pipeline, MocodoEnvironment mocodoEnvironment)
+        {
+
+
+            if (!pipeline.Extensions.Contains<MocodoExtension>())
+            {
+                pipeline.Extensions.Add(new MocodoExtension(mocodoEnvironment));
+            }
             return pipeline;
         }
 
@@ -597,6 +615,9 @@ namespace Markdig
                         break;
                     case "medialinks":
                         pipeline.UseMediaLinks();
+                        break;
+                    case "mocodo":
+                        pipeline.UseMocodo(new MocodoEnvironment());
                         break;
                     case "smartypants":
                         pipeline.UseSmartyPants();
