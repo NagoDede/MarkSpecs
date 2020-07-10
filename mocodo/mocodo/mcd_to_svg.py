@@ -133,7 +133,7 @@ def main(mcd, common):
         result.append("""lines += '\\n<text id="bottom_annotation_%s" text-anchor="middle" x="%%s" y="%%s" fill="%%s" font-family="%%s" font-size="%%s" visibility="hidden"></text>' %% (width/2, height-annotation_overlay_height+annotation_baseline, annotation_text_color, annotation_font['family'], annotation_font['size'])""" % salt)
     result.append("""lines += u'\\n</svg>'""")
     result.append("""\nwith codecs.open(r"%(output_name)s.svg", "w", "utf8") as f:\n    f.write(lines)""" % params)
-    result.append((_("""safe_print_for_PHP(u'Output file "{output_name}.svg" successfully generated.')""").format(output_name=params["output_name"])))
+    result.append((_("""safe_print_for_PHP(r'Output file "{output_name}.svg" successfully generated.')""").format(output_name=params["output_name"])))
     common.dump_output_file("\n".join(result))
 
 
