@@ -1,19 +1,18 @@
-﻿using System;
-using Markdig;
+﻿using Markdig;
+using System;
 using System.IO;
-using System.Text;
 
 namespace MarkSpecs
 {
-    class Program
+    internal class Program
     {
-        static void Error(string message)
+        private static void Error(string message)
         {
             Console.WriteLine(message);
             Environment.Exit(1);
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length != 1 || args[0] == "--help" || args[0] == "-help" || args[0] == "/?" || args[0] == "/help")
             {
@@ -23,27 +22,22 @@ namespace MarkSpecs
 
             if (Path.GetExtension(args[0]).Equals(".md"))
             {
-            if (!File.Exists(args[0]))
+                if (!File.Exists(args[0]))
                     Error("File does not exist.");
 
                 if (File.Exists(args[0]))
                     GenerateHtmlFileFromSingle(args[0]);
                 else if (!Path.GetExtension(args[0]).Equals(".md"))
                     Error("Unrecognized file extension. MD files only.");
-
             }
             else if (Directory.Exists(args[0]))
                 GeneratesHtmlFileFromDirectory(args[0]);
-
             else
                 Error("Not recognized command: " + args[0]);
-
         }
-
 
         private static void GeneratesHtmlFileFromDirectory(string path)
         {
-
             var mdFiles = Directory.GetFiles(path, "*.md", SearchOption.TopDirectoryOnly);
             Array.Sort(mdFiles, StringComparer.CurrentCulture);
 
@@ -64,7 +58,6 @@ namespace MarkSpecs
             }
             else
                 GenerateHtmlFile(fileName, stringWriter.ToString());
-
         }
 
         private static void GenerateHtmlFile(string outFile, string htmlContent, string head = "")
@@ -84,7 +77,6 @@ namespace MarkSpecs
             string htmlFileName = Path.ChangeExtension(markdownFile, ".html");
             var html = GenerateHtmlFileContent(markdownFile);
             GenerateHtmlFile(htmlFileName, html);
-
         }
 
         private static string GenerateHtmlFileContent(string markdownFile)

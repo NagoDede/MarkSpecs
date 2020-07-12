@@ -1,6 +1,10 @@
+// Copyright (c) Vincent DETROYAT. All rights reserved.
+// This file is licensed under the BSD-Clause 2 license.
+// See the license.txt file in the project root for more information.
+
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 
 namespace Markdig.Extensions.Mocodo
 {
@@ -11,7 +15,6 @@ namespace Markdig.Extensions.Mocodo
     {
         public string PythonPath { get; set; }
         public string MocodoPath { get; set; }
-
 
         public MocodoEnvironment()
         {
@@ -31,7 +34,7 @@ namespace Markdig.Extensions.Mocodo
         /// </summary>
         /// <param name="mocodoPath"></param>
         public MocodoEnvironment(string mocodoPath)
-        { 
+        {
             try
             {
                 this.PythonPath = RetrievePythonPathFromEnvironmentVariable();
@@ -43,7 +46,6 @@ namespace Markdig.Extensions.Mocodo
 
             this.MocodoPath = mocodoPath;
         }
-
 
         public MocodoEnvironment(string pythonpath, string mocodoPath)
         {
@@ -104,16 +106,17 @@ namespace Markdig.Extensions.Mocodo
             return applicablePythonPath;
         }
 
-
-
+        /// <summary>
+        /// Retrieve Moco in the assembly.
+        /// </summary>
+        /// <returns></returns>
         private string RetriveMocodopath()
         {
-            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mocodo","mocodo.py");
+            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mocodo", "mocodo.py");
             if (File.Exists(mocodoPath))
                 return mocodoPath;
             else
                 throw new NullReferenceException("Unable to find mocodo path");
         }
-
     }
 }

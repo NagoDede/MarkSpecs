@@ -1,3 +1,7 @@
+// Copyright (c) Vincent DETROYAT. All rights reserved.
+// This file is licensed under the BSD-Clause 2 license.
+// See the license.txt file in the project root for more information.
+
 using Markdig.Helpers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
@@ -124,7 +128,7 @@ namespace Markdig.Extensions.Mocodo
 
             var generatedFiles = GetMocodoFiles(mocodoAttr);
 
-            var outData =  GetFilesContent(generatedFiles);
+            var outData = GetFilesContent(generatedFiles);
 
             return outData;
 
@@ -322,7 +326,7 @@ namespace Markdig.Extensions.Mocodo
             {
                 if (attr.RequestMcdSvg)
                 {
-                    FindRelevantFiles(attr, ref mocodoFiles, "", false );
+                    FindRelevantFiles(attr, ref mocodoFiles, "", false);
                 }
 
                 if (attr.RequestMldSvgDiagram && !attr.MldNameOverridesMcdName)

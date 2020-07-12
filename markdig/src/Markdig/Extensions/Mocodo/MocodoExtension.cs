@@ -1,5 +1,5 @@
-// Copyright (c) Alexandre Mutel. All rights reserved.
-// This file is licensed under the BSD-Clause 2 license. 
+// Copyright (c) Vincent DETROYAT. All rights reserved.
+// This file is licensed under the BSD-Clause 2 license.
 // See the license.txt file in the project root for more information.
 
 using Markdig.Renderers;
@@ -9,7 +9,7 @@ namespace Markdig.Extensions.Mocodo
     /// <summary>
     /// Extension for adding mocodo commands.
     /// Markdig will execute the mocodo commands to generates the outputs.
-    /// 
+    ///
     /// </summary>
     /// <seealso cref="IMarkdownExtension" />
     public class MocodoExtension : IMarkdownExtension

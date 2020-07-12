@@ -33,6 +33,7 @@ using Markdig.Extensions.TextRenderer;
 using Markdig.Extensions.Yaml;
 using Markdig.Extensions.Sections;
 using Markdig.Extensions.Mocodo;
+using Markdig.Extensions.PlantUml;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -90,6 +91,7 @@ namespace Markdig
                 .UseGridTables()
                 .UseMathematics()
                 .UseMocodo(new MocodoEnvironment())
+                .UsePlantUml(new PlantUmlEnvironment())
                 .UseMediaLinks()
                 .UsePipeTables()
                 .UseListExtras()
@@ -232,6 +234,21 @@ namespace Markdig
             }
             return pipeline;
         }
+
+        /// <summary>
+        /// Uses the PlantUml diagram <see cref="http://www.plantuml.com/"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UsePlantUml(this MarkdownPipelineBuilder pipeline, PlantUmlEnvironment plantUmlEnvironment)
+        {
+            if (!pipeline.Extensions.Contains<PlantUmlExtension>())
+            {
+                pipeline.Extensions.Add(new PlantUmlExtension(plantUmlEnvironment));
+            }
+            return pipeline;
+        }
+
 
         /// <summary>
         /// Uses the media extension.
@@ -618,6 +635,9 @@ namespace Markdig
                         break;
                     case "mocodo":
                         pipeline.UseMocodo(new MocodoEnvironment());
+                        break;
+                    case "plantuml":
+                        pipeline.UsePlantUml(new PlantUmlEnvironment());
                         break;
                     case "smartypants":
                         pipeline.UseSmartyPants();
