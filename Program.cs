@@ -4,11 +4,13 @@ using Markdig.Extensions.PlantUml;
 using System;
 using System.Configuration;
 using System.IO;
+using System.Threading;
 
 namespace MarkSpecs
 {
     internal class Program
     {
+        
         private static void Error(string message)
         {
             Console.WriteLine(message);
@@ -23,24 +25,34 @@ namespace MarkSpecs
                 return;
             }
 
-            Markdig.Extensions.EnvironmentList markdigEnvironmentList= new Markdig.Extensions.EnvironmentList();
-            markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
-            markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
-
-            if (Path.GetExtension(args[0]).Equals(".md"))
+            if (args[0] == "launchPlantUml")
             {
-                if (!File.Exists(args[0]))
-                    Error("File does not exist.");
-
-                if (File.Exists(args[0]))
-                    GenerateHtmlFileFromSingle(args[0], markdigEnvironmentList);
-                else if (!Path.GetExtension(args[0]).Equals(".md"))
-                    Error("Unrecognized file extension. MD files only.");
+                if (ShallLaunchPlantUmlServer())
+                {
+                    PlantUmlProcessManager processManager = new PlantUmlProcessManager();
+                }
             }
-            else if (Directory.Exists(args[0]))
-                GeneratesHtmlFileFromDirectory(args[0], markdigEnvironmentList);
             else
-                Error("Not recognized command: " + args[0]);
+            {
+                Markdig.Extensions.EnvironmentList markdigEnvironmentList = new Markdig.Extensions.EnvironmentList();
+                markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
+                markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
+
+                if (Path.GetExtension(args[0]).Equals(".md"))
+                {
+                    if (!File.Exists(args[0]))
+                        Error("File does not exist.");
+
+                    if (File.Exists(args[0]))
+                        GenerateHtmlFileFromSingle(args[0], markdigEnvironmentList);
+                    else if (!Path.GetExtension(args[0]).Equals(".md"))
+                        Error("Unrecognized file extension. MD files only.");
+                }
+                else if (Directory.Exists(args[0]))
+                    GeneratesHtmlFileFromDirectory(args[0], markdigEnvironmentList);
+                else
+                    Error("Not recognized command: " + args[0]);
+            }
         }
 
         /// <summary>
@@ -55,14 +67,14 @@ namespace MarkSpecs
 
             StringWriter stringWriter = new StringWriter();
 
-           //Create the markdig pipeline
+            //Create the markdig pipeline
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(environmentList);
-            
+
             //Generate the content of the HTML files
             foreach (var mdFile in mdFiles)
             {
                 string content = File.ReadAllText(mdFile);
-                var htmlContent =  Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
+                var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
                 stringWriter.WriteLine(htmlContent);
             }
 
@@ -126,12 +138,33 @@ namespace MarkSpecs
         private static PlantUmlEnvironment PlantUmlEnvironmentFromConfig()
         {
             //retrieve the PlantUmlSettings
-            var host = ConfigurationManager.AppSettings["PlantUmlHost"];
-            var port = int.Parse(ConfigurationManager.AppSettings["PlantUmlPort"]);
-            var user = ConfigurationManager.AppSettings["PlantUmlFtpUser"];
-            var pwd = ConfigurationManager.AppSettings["PlantUmlFtpPwd"];
+            var host = ConfigurationManager.AppSettings["PlantUml.Host"];
+            var port = int.Parse(ConfigurationManager.AppSettings["PlantUml.Port"]);
+            var user = ConfigurationManager.AppSettings["PlantUml.FtpUser"];
+            var pwd = ConfigurationManager.AppSettings["PlantUml.FtpPwd"];
 
             return new PlantUmlEnvironment(host, port, user, pwd);
+        }
+
+        private static bool ShallLaunchPlantUmlServer()
+        {
+            var plantumlpath = ConfigurationManager.AppSettings["PlantUml.Path"];
+            var plantumlInstance = int.Parse(ConfigurationManager.AppSettings["PlantUml.InstancesCount"]);
+
+            if ((plantumlInstance > 0) && (!String.IsNullOrWhiteSpace(plantumlpath)))
+            {
+                if (!File.Exists(plantumlpath))
+                {
+                    //try to launch the local version of plantuml
+                    var localPlantUmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, plantumlpath);
+                    if (!File.Exists(localPlantUmlPath))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

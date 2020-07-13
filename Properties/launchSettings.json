@@ -2,7 +2,7 @@
   "profiles": {
     "MarkSpecs": {
       "commandName": "Project",
-      "commandLineArgs": "tests/test_mocodo.md"
+      "commandLineArgs": "tests\\test_mocodo.md"
     }
   }
 }
