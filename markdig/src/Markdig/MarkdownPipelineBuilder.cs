@@ -1,12 +1,12 @@
 // Copyright (c) Alexandre Mutel. All rights reserved.
-// This file is licensed under the BSD-Clause 2 license. 
+// This file is licensed under the BSD-Clause 2 license.
 // See the license.txt file in the project root for more information.
 
-using System;
-using System.IO;
 using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
+using System;
+using System.IO;
 
 namespace Markdig
 {
@@ -87,7 +87,7 @@ namespace Markdig
         /// Builds a pipeline from this instance. Once the pipeline is build, it cannot be modified.
         /// </summary>
         /// <exception cref="InvalidOperationException">An extension cannot be null</exception>
-        public MarkdownPipeline Build()
+        public MarkdownPipeline Build(Extensions.EnvironmentList environments = null)
         {
             if (pipeline != null)
             {
@@ -100,13 +100,42 @@ namespace Markdig
             // We should find a proper way to make the pipeline safely modifiable/freezable (PipelineBuilder -> Pipeline)
 
             // Allow extensions to modify existing BlockParsers, InlineParsers and Renderer
-            foreach (var extension in Extensions)
+            //If there is no environment, do a simple setup
+            if (environments is null)
             {
-                if (extension == null)
+                foreach (var extension in Extensions)
                 {
-                    ThrowHelper.InvalidOperationException("An extension cannot be null");
+                    if (extension == null)
+                    {
+                        ThrowHelper.InvalidOperationException("An extension cannot be null");
+                    }
+                    //If the extension require an environment, load the default environment
+                    if (extension is Extensions.IExtensionEnvironment)
+                    {
+                        var extensionEnv = (Markdig.Extensions.IExtensionEnvironment)extension;
+                        var env = extensionEnv.DefaultEnvironment;
+                        extensionEnv.SetEnvironment(env);
+                    }
+
+                        extension.Setup(this);
                 }
-                extension.Setup(this);
+            }
+            else
+            {
+                foreach (var extension in Extensions)
+                {
+                    if (extension == null)
+                    {
+                        ThrowHelper.InvalidOperationException("An extension cannot be null");
+                    }
+                    //Load the defined environment to the extension
+                    if (extension is Extensions.IExtensionEnvironment)
+                    { var extensionEnv = (Markdig.Extensions.IExtensionEnvironment)extension;
+                        var env = environments[extensionEnv.ExtensionName];
+                        extensionEnv.SetEnvironment(env);
+                    }
+                        extension.Setup(this);
+                }
             }
 
             pipeline = new MarkdownPipeline(

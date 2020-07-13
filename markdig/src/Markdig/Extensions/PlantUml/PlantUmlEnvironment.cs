@@ -11,25 +11,73 @@ namespace Markdig.Extensions.PlantUml
     /// <summary>
     /// Defines the environment to use PlantUml over FTP.
     /// </summary>
-    public class PlantUmlEnvironment
+    public class PlantUmlEnvironment : ExtensionEnvironment
     {
-        public string PlantUmlHost { get; private set; }
-        public Int32 PlantUmlStartPort { get; private set; }
+        public override string ExtensionName { get => "plantuml"; }
+
+        public string Host {
+            get
+            {
+                return this["Host"];
+            }
+
+            private set
+            {
+                this["Host"] = value;
+            }
+        }
+        public Int32 Port
+        {
+            get
+            {
+                return this["Port"];
+            }
+
+            private set
+            {
+                this["Port"] = value;
+            }
+        }
 
         //public string JavaPath { get; private set; }
 
-        public string PlantUmlFtpUserId { get; set; } = "";
-        public string PlantUmlFtpUserPwd { get; set; } = "";
-
-        /// <summary>
-        /// Initiate a PlantUml environment to a local host on default port.
-        /// Hot: 127.0.0.1 and port 4242.
-        /// Also, user has to take care about Firewall parameters.
-        /// </summary>
-        public PlantUmlEnvironment()
+        public string FtpUserId
         {
-            this.PlantUmlHost = "127.0.0.1";
-            this.PlantUmlStartPort = 4242;
+            get
+            {
+                return this["FtpUserId"];
+            }
+
+            private set
+            {
+                this["FtpUserId"] = value;
+            }
+        }
+
+        public string FtpUserPwd
+        {
+            get
+            {
+                return this["FtpUserPwd"];
+            }
+
+            private set
+            {
+                this["FtpUserPwd"] = value;
+            }
+        }
+
+    /// <summary>
+    /// Initiate a PlantUml environment to a local host on default port.
+    /// Hot: 127.0.0.1 and port 4242.
+    /// Also, user has to take care about Firewall parameters.
+    /// </summary>
+    public PlantUmlEnvironment()
+        {
+            this.Host = "127.0.0.1";
+            this.Port = 4242;
+            this.FtpUserId = "";
+            this.FtpUserPwd = "";
             //this.JavaPath = RetrieveJavaPathFromEnvironmentVariable();
         }
 
@@ -40,11 +88,13 @@ namespace Markdig.Extensions.PlantUml
         /// <param name="plantUmlStartPort"></param>
         /// <param name="javaPath"></param>
         public PlantUmlEnvironment(string plantUmlHost,
-    Int32 plantUmlStartPort)
+    Int32 plantUmlStartPort, string ftpUser = "", string ftpPass = "")
         //string javaPath)
         {
-            this.PlantUmlHost = plantUmlHost;
-            this.PlantUmlStartPort = plantUmlStartPort;
+            this.Host = plantUmlHost;
+            this.Port = plantUmlStartPort;
+            this.FtpUserId = ftpUser;
+            this.FtpUserPwd = ftpPass;
             //this.JavaPath = javaPath;
         }
 

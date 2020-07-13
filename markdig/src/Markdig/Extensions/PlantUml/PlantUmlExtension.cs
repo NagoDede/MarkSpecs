@@ -15,14 +15,17 @@ namespace Markdig.Extensions.PlantUml
     /// document is a PNG file (default PlantUml configuration).
     /// </summary>
     /// <seealso cref="IMarkdownExtension" />
-    public class PlantUmlExtension : IMarkdownExtension
+    public class PlantUmlExtension : IMarkdownExtension, IExtensionEnvironment
     {
-        private readonly PlantUmlEnvironment plantUmlEnvironment;
+        private  PlantUmlEnvironment plantUmlEnvironment;
+        string IExtensionEnvironment.ExtensionName => "plantuml";
+        public PlantUmlExtension()
+        { }
 
-        public PlantUmlExtension(PlantUmlEnvironment plantUmlEnvironment)
-        {
-            this.plantUmlEnvironment = plantUmlEnvironment;
-        }
+        //public PlantUmlExtension(PlantUmlEnvironment plantUmlEnvironment)
+        //{
+        //    this.plantUmlEnvironment = plantUmlEnvironment;
+        //}
 
         public void Setup(MarkdownPipelineBuilder pipeline)
         {
@@ -43,5 +46,12 @@ namespace Markdig.Extensions.PlantUml
                 }
             }
         }
+
+        void IExtensionEnvironment.SetEnvironment(ExtensionEnvironment env)
+        {
+            plantUmlEnvironment = (PlantUmlEnvironment)env;
+        }
+
+         ExtensionEnvironment IExtensionEnvironment.DefaultEnvironment { get => new PlantUmlEnvironment(); }
     }
 }

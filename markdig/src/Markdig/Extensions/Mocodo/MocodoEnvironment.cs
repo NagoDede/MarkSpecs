@@ -11,10 +11,35 @@ namespace Markdig.Extensions.Mocodo
     /// <summary>
     /// Defines the python environment for Mocodo.
     /// </summary>
-    public class MocodoEnvironment
+    public class MocodoEnvironment : ExtensionEnvironment
     {
-        public string PythonPath { get; set; }
-        public string MocodoPath { get; set; }
+        public override string ExtensionName { get => "mocodo"; }
+
+        public string PythonPath
+        {
+            get
+            {
+                return this["PythonPath"];
+            }
+
+            private set
+            {
+                this["PythonPath"] = value;
+            }
+        }
+
+        public string MocodoPath
+        {
+            get
+            {
+                return this["MocodoPath"];
+            }
+
+            private set
+            {
+                this["MocodoPath"] = value;
+            }
+        }
 
         public MocodoEnvironment()
         {
@@ -61,7 +86,7 @@ namespace Markdig.Extensions.Mocodo
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NullReferenceException">Python environment not identified.</exception>
-        private string RetrievePythonPathFromEnvironmentVariable()
+        private static string RetrievePythonPathFromEnvironmentVariable()
         {
             //Search in user variables first
             var paths = Environment.GetEnvironmentVariable("path", EnvironmentVariableTarget.User).Split(";".ToCharArray());
@@ -77,7 +102,7 @@ namespace Markdig.Extensions.Mocodo
             return pythonPath ?? throw new ArgumentNullException("Unable to identify Python environment");
         }
 
-        private string? SearchInPaths(string[] paths)
+        private static string? SearchInPaths(string[] paths)
         {
             string? applicablePythonPath = null;
             Version? applicablePythonVersion = null;
@@ -110,7 +135,7 @@ namespace Markdig.Extensions.Mocodo
         /// Retrieve Moco in the assembly.
         /// </summary>
         /// <returns></returns>
-        private string RetriveMocodopath()
+        private static string RetriveMocodopath()
         {
             string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mocodo", "mocodo.py");
             if (File.Exists(mocodoPath))

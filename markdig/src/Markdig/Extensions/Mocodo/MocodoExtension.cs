@@ -12,14 +12,24 @@ namespace Markdig.Extensions.Mocodo
     ///
     /// </summary>
     /// <seealso cref="IMarkdownExtension" />
-    public class MocodoExtension : IMarkdownExtension
+    public class MocodoExtension : IMarkdownExtension, IExtensionEnvironment
     {
-        private readonly MocodoEnvironment mocodoEnvironment;
+        private MocodoEnvironment mocodoEnvironment;
 
-        public MocodoExtension(MocodoEnvironment mocodoEnvironment)
+        string IExtensionEnvironment.ExtensionName => "mocodo";
+
+
+
+        public MocodoExtension()
         {
-            this.mocodoEnvironment = mocodoEnvironment;
+
         }
+
+
+        //public MocodoExtension(MocodoEnvironment mocodoEnvironment)
+        //{
+        //    this.mocodoEnvironment = mocodoEnvironment;
+        //}
 
         public void Setup(MarkdownPipelineBuilder pipeline)
         {
@@ -41,5 +51,12 @@ namespace Markdig.Extensions.Mocodo
                 }
             }
         }
+
+        public void SetEnvironment(ExtensionEnvironment env)
+        {
+            this.mocodoEnvironment = (MocodoEnvironment)env;
+        }
+
+        ExtensionEnvironment IExtensionEnvironment.DefaultEnvironment { get => new MocodoEnvironment(); }
     }
 }

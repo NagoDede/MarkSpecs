@@ -1,4 +1,5 @@
 ﻿using Markdig;
+using Markdig.Extensions;
 using System;
 using System.IO;
 
@@ -20,18 +21,22 @@ namespace MarkSpecs
                 return;
             }
 
+            Markdig.Extensions.EnvironmentList markdigEnvironmentList= new Markdig.Extensions.EnvironmentList();
+            markdigEnvironmentList.Add(new Markdig.Extensions.PlantUml.PlantUmlEnvironment());
+            markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
+
             if (Path.GetExtension(args[0]).Equals(".md"))
             {
                 if (!File.Exists(args[0]))
                     Error("File does not exist.");
 
                 if (File.Exists(args[0]))
-                    GenerateHtmlFileFromSingle(args[0]);
+                    GenerateHtmlFileFromSingle(args[0], markdigEnvironmentList);
                 else if (!Path.GetExtension(args[0]).Equals(".md"))
                     Error("Unrecognized file extension. MD files only.");
             }
             else if (Directory.Exists(args[0]))
-                GeneratesHtmlFileFromDirectory(args[0]);
+                GeneratesHtmlFileFromDirectory(args[0], markdigEnvironmentList);
             else
                 Error("Not recognized command: " + args[0]);
         }
@@ -41,23 +46,41 @@ namespace MarkSpecs
         /// Use sorted files in accordance with the currentCulture information.
         /// </summary>
         /// <param name="path"></param>
-        private static void GeneratesHtmlFileFromDirectory(string path)
+        private static void GeneratesHtmlFileFromDirectory(string path, Markdig.Extensions.EnvironmentList environmentList)
         {
             var mdFiles = Directory.GetFiles(path, "*.md", SearchOption.TopDirectoryOnly);
             Array.Sort(mdFiles, StringComparer.CurrentCulture);
 
             StringWriter stringWriter = new StringWriter();
 
-            //Generate the content of the HTML file
+           //Creat ethe markdig pipeline
+            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(environmentList);
+            
+            //Generate the content of the HTML files
             foreach (var mdFile in mdFiles)
             {
-                stringWriter.WriteLine(GenerateHtmlFileContent(mdFile));
+                string content = File.ReadAllText(mdFile);
+                var htmlContent =  Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
+                stringWriter.WriteLine(htmlContent);
             }
 
             var fileName = Path.Combine(path, Path.GetFileName(path) + ".html");
             var headerContent = RetrieveHeaderFile(path);
             //Generate the final HTML file
             GenerateHtmlFile(fileName, stringWriter.ToString(), headerContent);
+        }
+
+        /// <summary>
+        /// Generate a HTML file from a single MD file.
+        /// </summary>
+        /// <param name="markdownFile"></param>
+        private static void GenerateHtmlFileFromSingle(string markdownFile, EnvironmentList envList)
+        {
+            string htmlFileName = Path.ChangeExtension(markdownFile, ".html");
+            string content = File.ReadAllText(markdownFile);
+            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(envList);
+            var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
+            GenerateHtmlFile(htmlFileName, htmlContent);
         }
 
         /// <summary>
@@ -78,23 +101,7 @@ namespace MarkSpecs
             sw.Close();
         }
 
-        /// <summary>
-        /// Generate a HTML file from a single MD file.
-        /// </summary>
-        /// <param name="markdownFile"></param>
-        private static void GenerateHtmlFileFromSingle(string markdownFile)
-        {
-            string htmlFileName = Path.ChangeExtension(markdownFile, ".html");
-            var html = GenerateHtmlFileContent(markdownFile);
-            GenerateHtmlFile(htmlFileName, html);
-        }
 
-        private static string GenerateHtmlFileContent(string markdownFile)
-        {
-            string content = File.ReadAllText(markdownFile);
-            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            return Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
-        }
 
         /// <summary>
         /// Retrieve the Header head.html file and gets its content.

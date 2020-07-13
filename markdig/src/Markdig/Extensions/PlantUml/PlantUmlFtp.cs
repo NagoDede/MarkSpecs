@@ -27,10 +27,10 @@ namespace Markdig.Extensions.PlantUml
 
         public PlantUmlFtp(PlantUmlEnvironment environment)
         {
-            host = environment.PlantUmlHost;
-            user = environment.PlantUmlFtpUserId;
-            pass = environment.PlantUmlFtpUserPwd;
-            port = environment.PlantUmlStartPort.ToString();
+            host = environment.Host;
+            user = environment.FtpUserId;
+            pass = environment.FtpUserPwd;
+            port = environment.Port.ToString();
         }
 
         /// <summary>

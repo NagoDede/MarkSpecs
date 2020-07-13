@@ -90,8 +90,8 @@ namespace Markdig
                 .UseFootnotes()
                 .UseGridTables()
                 .UseMathematics()
-                .UseMocodo(new MocodoEnvironment())
-                .UsePlantUml(new PlantUmlEnvironment())
+                .UseMocodo()
+                .UsePlantUml()
                 .UseMediaLinks()
                 .UsePipeTables()
                 .UseListExtras()
@@ -224,11 +224,11 @@ namespace Markdig
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>The modified pipeline</returns>
-        public static MarkdownPipelineBuilder UseMocodo(this MarkdownPipelineBuilder pipeline, MocodoEnvironment mocodoEnvironment)
+        public static MarkdownPipelineBuilder UseMocodo(this MarkdownPipelineBuilder pipeline)
         {
             if (!pipeline.Extensions.Contains<MocodoExtension>())
             {
-                pipeline.Extensions.Add(new MocodoExtension(mocodoEnvironment));
+                pipeline.Extensions.Add(new MocodoExtension());
             }
             return pipeline;
         }
@@ -238,11 +238,11 @@ namespace Markdig
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>The modified pipeline</returns>
-        public static MarkdownPipelineBuilder UsePlantUml(this MarkdownPipelineBuilder pipeline, PlantUmlEnvironment plantUmlEnvironment)
+        public static MarkdownPipelineBuilder UsePlantUml(this MarkdownPipelineBuilder pipeline)
         {
             if (!pipeline.Extensions.Contains<PlantUmlExtension>())
             {
-                pipeline.Extensions.Add(new PlantUmlExtension(plantUmlEnvironment));
+                pipeline.Extensions.Add(new PlantUmlExtension());
             }
             return pipeline;
         }
@@ -632,10 +632,10 @@ namespace Markdig
                         pipeline.UseMediaLinks();
                         break;
                     case "mocodo":
-                        pipeline.UseMocodo(new MocodoEnvironment());
+                        pipeline.UseMocodo();
                         break;
                     case "plantuml":
-                        pipeline.UsePlantUml(new PlantUmlEnvironment());
+                        pipeline.UsePlantUml();
                         break;
                     case "smartypants":
                         pipeline.UseSmartyPants();
