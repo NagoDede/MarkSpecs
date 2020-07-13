@@ -1,6 +1,8 @@
 ﻿using Markdig;
 using Markdig.Extensions;
+using Markdig.Extensions.PlantUml;
 using System;
+using System.Configuration;
 using System.IO;
 
 namespace MarkSpecs
@@ -22,7 +24,7 @@ namespace MarkSpecs
             }
 
             Markdig.Extensions.EnvironmentList markdigEnvironmentList= new Markdig.Extensions.EnvironmentList();
-            markdigEnvironmentList.Add(new Markdig.Extensions.PlantUml.PlantUmlEnvironment());
+            markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
             markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
 
             if (Path.GetExtension(args[0]).Equals(".md"))
@@ -53,7 +55,7 @@ namespace MarkSpecs
 
             StringWriter stringWriter = new StringWriter();
 
-           //Creat ethe markdig pipeline
+           //Create the markdig pipeline
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(environmentList);
             
             //Generate the content of the HTML files
@@ -101,8 +103,6 @@ namespace MarkSpecs
             sw.Close();
         }
 
-
-
         /// <summary>
         /// Retrieve the Header head.html file and gets its content.
         /// If the file does not exist, return an empty string.
@@ -112,12 +112,26 @@ namespace MarkSpecs
         private static string RetrieveHeaderFile(string path)
         {
             //Retrieve the Head
-
             var headFile = Directory.GetFiles(path, "head.html", SearchOption.TopDirectoryOnly);
             if (headFile.Length == 1)
                 return File.ReadAllText(headFile[0]);
             else
                 return String.Empty;
+        }
+
+        /// <summary>
+        /// Configure the PlantUml environment by using the data of the Application config.
+        /// </summary>
+        /// <returns></returns>
+        private static PlantUmlEnvironment PlantUmlEnvironmentFromConfig()
+        {
+            //retrieve the PlantUmlSettings
+            var host = ConfigurationManager.AppSettings["PlantUmlHost"];
+            var port = int.Parse(ConfigurationManager.AppSettings["PlantUmlPort"]);
+            var user = ConfigurationManager.AppSettings["PlantUmlFtpUser"];
+            var pwd = ConfigurationManager.AppSettings["PlantUmlFtpPwd"];
+
+            return new PlantUmlEnvironment(host, port, user, pwd);
         }
     }
 }
