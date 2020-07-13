@@ -8,6 +8,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+
+/// <summary>
+/// Connect to a PlantUlm FTp server.
+/// Send the PlantUml description to the server and return the SVG content.
+/// </summary>
 namespace Markdig.Extensions.PlantUml
 {
     internal class PlantUmlFtp
@@ -28,20 +33,30 @@ namespace Markdig.Extensions.PlantUml
             port = environment.PlantUmlStartPort.ToString();
         }
 
+        /// <summary>
+        /// Get the PlantUml SVG diagram from the content.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public async Task<string> GetSvg(string content)
         {
             var fileNameIn = "Markedig_" + contentsCount + ".txt";
             var fileNameOut = "Markedig_" + contentsCount + ".svg";
             contentsCount++;
 
-            if (await FtpWriteAsync(@"ftp://" + host + ":" + port + "/" + fileNameIn, content))
+            var sendFileResult = await FtpWriteAsync(@"ftp://" + host + ":" + port + "/" + fileNameIn, content);
+
+            if (sendFileResult.Item1)
             {
                 return await FtpReadAsycn(@"ftp://" + host + ":" + port + "/" + fileNameOut);
             }
-            return "Unable to generate SVG file";
+            else
+            {
+                return "Unable to generate SVG file: " + sendFileResult.Item2;
+            }
         }
 
-        private async Task<bool> FtpWriteAsync(string distantFile, string content)
+        private async Task<(bool, string)> FtpWriteAsync(string distantFile, string content)
         {
             /* Create an FTP Request */
             FtpWebRequest ftpRequest = (FtpWebRequest)FtpWebRequest.Create(distantFile);
@@ -64,9 +79,9 @@ namespace Markdig.Extensions.PlantUml
             }
             catch (Exception ex)
             {
-                return false;
+                return (false, ex.Message);
             }
-            return true;
+            return (true,"");
         }
 
         private async Task<string> FtpReadAsycn(string distanceFile)

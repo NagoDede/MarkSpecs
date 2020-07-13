@@ -226,8 +226,6 @@ namespace Markdig
         /// <returns>The modified pipeline</returns>
         public static MarkdownPipelineBuilder UseMocodo(this MarkdownPipelineBuilder pipeline, MocodoEnvironment mocodoEnvironment)
         {
-
-
             if (!pipeline.Extensions.Contains<MocodoExtension>())
             {
                 pipeline.Extensions.Add(new MocodoExtension(mocodoEnvironment));

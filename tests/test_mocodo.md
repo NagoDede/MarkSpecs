@@ -101,3 +101,132 @@ annotation SuppressWarnings
 
 @enduml
 ```
+
+```plantuml
+@startuml
+clock clk with period 1
+binary "Enable" as EN
+
+@0
+EN is low
+
+@5
+EN is high
+
+@10
+EN is low
+@enduml
+```
+
+```plantuml
+@startuml
+clock clk with period 1
+binary "enable" as EN
+concise "dataBus" as db
+
+@0 as :start
+@5 as :en_high 
+@10 as :en_low
+
+
+@:start
+EN is low
+db is "0x0000"
+
+@:en_high
+EN is high
+
+@:en_low
+EN is low
+
+@:en_high-2
+db is "0xf23a"
+
+@:en_high+6
+db is "0x0000"
+@enduml
+```
+
+```plantuml
+@startuml
+scale 5 as 150 pixels
+
+clock clk with period 1
+binary "enable" as en
+binary "R/W" as rw
+binary "data Valid" as dv
+concise "dataBus" as db
+concise "address bus" as addr
+
+@6 as :write_beg
+@10 as :write_end
+
+@15 as :read_beg
+@19 as :read_end
+
+
+@0
+en is low
+db is "0x0"
+addr is "0x03f"
+rw is low
+dv is 0
+
+@:write_beg-3
+ en is high
+@:write_beg-2
+ db is "0xDEADBEEF"
+@:write_beg-1
+dv is 1
+@:write_beg
+rw is high
+
+
+@:write_end
+rw is low
+dv is low
+@:write_end+1
+rw is low
+db is "0x0"
+addr is "0x23"
+
+@12
+dv is high
+@13 
+db is "0xFFFF"
+
+@20
+en is low
+dv is low
+@21 
+db is "0x0"
+
+highlight :write_beg to :write_end #Gold:Write
+highlight :read_beg to :read_end #lightBlue:Read
+
+db@:write_beg-1 <-> @:write_end : setup time
+db@:write_beg-1 -> addr@:write_end+1 : hold
+@enduml
+```
+
+```plantuml
+@startuml
+listopeniconic
+@enduml
+```
+
+```plantuml
+@startsalt
+{+
+{* File | Edit | Source | Refactor }
+{/ General | Fullscreen | Behavior | Saving }
+{
+{ Open image in: | ^Smart Mode^ }
+[X] Smooth images when zoomed
+[X] Confirm image deletion
+[ ] Show hidden images
+}
+[Close]
+}
+@endsalt
+
