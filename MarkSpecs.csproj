@@ -4,6 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <NeutralLanguage>en</NeutralLanguage>
+    <StartupObject>MarkSpecs.Program</StartupObject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;MSB3073</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,12 +48,15 @@
 
   <ItemGroup>
     <None Update="App.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="tests\01-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="plantuml.config">
+    <None Update="tests\02-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="tests\test_mocodo.md">
+    <None Update="tests\03-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="vendors\plantuml.jar">
@@ -51,7 +65,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy $(SolutionDir)mocodo $(TargetDir)mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md" />
+    <Exec Command="(robocopy $(SolutionDir)mocodo $(TargetDir)mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
   </Target>
 
 </Project>

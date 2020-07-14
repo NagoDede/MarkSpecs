@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "MarkSpecs": {
+    "newProfile1": {
       "commandName": "Project",
-      "commandLineArgs": "tests\\test_mocodo.md"
+      "commandLineArgs": "tests"
     }
   }
 }

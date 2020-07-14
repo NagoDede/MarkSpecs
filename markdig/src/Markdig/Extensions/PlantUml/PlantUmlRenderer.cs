@@ -4,6 +4,8 @@
 
 using Markdig.Renderers;
 using Markdig.Renderers.Html;
+using System;
+using System.Security.Cryptography;
 
 namespace Markdig.Extensions.PlantUml
 {
@@ -24,10 +26,13 @@ namespace Markdig.Extensions.PlantUml
         {
             var PlantUml = new PlantUmlFtp(this.plantUmlEnvironment);
             renderer.EnsureLine();
+
             renderer.Write("<div").WriteAttributes(obj).WriteLine(">");
-            var results = PlantUml.GetSvg(obj.Lines.ToString()).Result;
-            renderer.WriteLine(results);
+            var results =PlantUml.GetSvg(obj.Lines.ToString());
+            
+            renderer.WriteLine(results.Result);
             renderer.WriteLine("</div>");
+
         }
     }
 }

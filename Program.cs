@@ -5,6 +5,8 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace MarkSpecs
 {
@@ -25,7 +27,7 @@ namespace MarkSpecs
                 return;
             }
 
-            if (args[0] == "launchPlantUml")
+            if (args[0] == "--plantumlserver")
             {
                 if (ShallLaunchPlantUmlServer())
                 {
@@ -37,6 +39,8 @@ namespace MarkSpecs
                 Markdig.Extensions.EnvironmentList markdigEnvironmentList = new Markdig.Extensions.EnvironmentList();
                 markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
                 markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
+
+                var watch = System.Diagnostics.Stopwatch.StartNew();
 
                 if (Path.GetExtension(args[0]).Equals(".md"))
                 {
@@ -52,7 +56,12 @@ namespace MarkSpecs
                     GeneratesHtmlFileFromDirectory(args[0], markdigEnvironmentList);
                 else
                     Error("Not recognized command: " + args[0]);
+
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Console.WriteLine($"Elapsed Time: {elapsedMs}");
             }
+            Console.Read();
         }
 
         /// <summary>
@@ -69,19 +78,25 @@ namespace MarkSpecs
 
             //Create the markdig pipeline
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(environmentList);
+            //will contain the html version of each md files
+            string[] outHtmls = new string[mdFiles.Length];
 
             //Generate the content of the HTML files
-            foreach (var mdFile in mdFiles)
+            Parallel.For(0, mdFiles.Length, i =>
             {
+               var mdFile = mdFiles[i];
                 string content = File.ReadAllText(mdFile);
                 var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
-                stringWriter.WriteLine(htmlContent);
+                outHtmls[i] = htmlContent;
             }
+            );
+
+            var joinnedHtml = String.Join(Environment.NewLine, outHtmls);
 
             var fileName = Path.Combine(path, Path.GetFileName(path) + ".html");
             var headerContent = RetrieveHeaderFile(path);
             //Generate the final HTML file
-            GenerateHtmlFile(fileName, stringWriter.ToString(), headerContent);
+            GenerateHtmlFile(fileName, joinnedHtml, headerContent);
         }
 
         /// <summary>
@@ -142,8 +157,9 @@ namespace MarkSpecs
             var port = int.Parse(ConfigurationManager.AppSettings["PlantUml.Port"]);
             var user = ConfigurationManager.AppSettings["PlantUml.FtpUser"];
             var pwd = ConfigurationManager.AppSettings["PlantUml.FtpPwd"];
+            var instanceNb = int.Parse(ConfigurationManager.AppSettings["PlantUml.InstancesCount"]);
 
-            return new PlantUmlEnvironment(host, port, user, pwd);
+            return new PlantUmlEnvironment(host, port,instanceNb, user, pwd);
         }
 
         private static bool ShallLaunchPlantUmlServer()

@@ -16,15 +16,54 @@ Date: Date
 Matière: Libellé matière
 Enseigner, 11 Prof, 1N Matière
 ```
+
 This is a plantuml diagram
+
 ```plantuml
 @startuml
-actor actor
-agent agent
-artifact artifact
-boundary boundary
-card card
-cloud cloud
+
+
+autonumber
+box "UnTrustedDomain" #Red
+	database UnTrustedKeyStore as UKS
+	control UnTrustedKeyManager as UKM
+    boundary KeyLoader as KL
+end box
+
+box "TrustedDomain" #Green
+	database PersistentStorage as KS
+    control KeyManager as KM
+
+end box
+
+
+group In the Beginning...
+    
+    group RootKBPK    
+        note over KM: A Unique random key is born
+        KS --> KS: Root KBPK exists
+    end
+   
+    group Storage in UnTrustedDomain 
+        KM --> KM: Create Class N KPBK
+        KS --> KM: RootKBPK 
+        note over KM: Shorthand for create a KeyBlock with ClassKBPK N as key payload, and RootKBPK as KBPK
+        UKM --> UKS: KeyBlock[ClassKBPK N]RootKBPK        
+        note over UKS: Process is repeated for ClassKBPK 1,2,3...N 
+    end
+end 
+
+@enduml
+```
+
+```plantuml
+@startuml
+actor actors
+agent agents
+artifact artifacts
+boundary boundarys
+card cards
+cloud clouds
 component component
 control control
 database database
@@ -209,11 +248,7 @@ db@:write_beg-1 -> addr@:write_end+1 : hold
 @enduml
 ```
 
-```plantuml
-@startuml
-listopeniconic
-@enduml
-```
+
 
 ```plantuml
 @startsalt

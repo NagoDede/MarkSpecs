@@ -13,7 +13,8 @@ namespace Markdig.Extensions.PlantUml
     {
         public override string ExtensionName { get => "plantuml"; }
 
-        public string Host {
+        public string Host
+        {
             get
             {
                 return this["Host"];
@@ -24,6 +25,7 @@ namespace Markdig.Extensions.PlantUml
                 this["Host"] = value;
             }
         }
+
         public Int32 Port
         {
             get
@@ -65,18 +67,31 @@ namespace Markdig.Extensions.PlantUml
             }
         }
 
-    /// <summary>
-    /// Initiate a PlantUml environment to a local host on default port.
-    /// Hot: 127.0.0.1 and port 4242.
-    /// Also, user has to take care about Firewall parameters.
-    /// </summary>
-    public PlantUmlEnvironment()
+        public int InstanceNb
+        {
+            get
+            {
+                return this["InstanceNb"];
+            }
+
+            private set
+            {
+                this["InstanceNb"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Initiate a PlantUml environment to a local host on default port.
+        /// Hot: 127.0.0.1 and port 4242.
+        /// Also, user has to take care about Firewall parameters.
+        /// </summary>
+        public PlantUmlEnvironment()
         {
             this.Host = "127.0.0.1";
             this.Port = 4242;
             this.FtpUserId = "";
             this.FtpUserPwd = "";
-            //this.JavaPath = RetrieveJavaPathFromEnvironmentVariable();
+            this.InstanceNb = 1;
         }
 
         /// <summary>
@@ -84,20 +99,15 @@ namespace Markdig.Extensions.PlantUml
         /// </summary>
         /// <param name="plantUmlHost"></param>
         /// <param name="plantUmlStartPort"></param>
-        /// <param name="javaPath"></param>
         public PlantUmlEnvironment(string plantUmlHost,
-    Int32 plantUmlStartPort, string ftpUser = "", string ftpPass = "")
+    Int32 plantUmlStartPort, int instance = 1, string ftpUser = "", string ftpPass = "")
         //string javaPath)
         {
             this.Host = plantUmlHost;
             this.Port = plantUmlStartPort;
             this.FtpUserId = ftpUser;
             this.FtpUserPwd = ftpPass;
-            //this.JavaPath = javaPath;
+            this.InstanceNb = instance;
         }
-
-        
-
-        
     }
 }
