@@ -1,5 +1,6 @@
 # AdvCmdParser
 AdvCmdParser is an Advanced Command Parser for .Net console projects.  
+It is a fork of the [CommandParser - A getopt() Inspired Command Line Parser for C# using LINQ](https://www.codeproject.com/Articles/42113/CommandParser-A-getopt-Inspired-Command-Line-Parse), initiated by __Christopher Hahn__ under [BSD licence](https://opensource.org/licenses/bsd-license.php).  
 The parser enables you to create efficient and complex command line software though a single class without any dependency.
 
 ## Capabilities
@@ -16,7 +17,7 @@ Initiate the command parser with a description of the application.
 ```cs
 CommandParser cp = new CommandParser();
 string appDefinition =
-"This is an exzmple on how to use the Command Parser. \r\n" +
+"This is an exemple on how to use the Command Parser. \r\n" +
 "The parser allows the management of commands with arguments/options, or a simple use of arguments. \r\n" +
 "Main idea is to manage a command line quite similar to git command line. Typically, a command line: \r\n" +
 "\t soft.exe new -branch \"new branch\" \r\n" +
