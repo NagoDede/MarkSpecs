@@ -49,21 +49,20 @@ Command c1 = cp.Command("new", c1Description, (c, p, a) => {
 
 Create a command 'addParam', with on parameter (mandatory item) and one argument:
 ```cs
-string c2Description = "This command shos how to add parameters to a command \r\n" +
+string c2Description = "This command shows how to add parameters to a command \r\n" +
   "Here, two parameters are defined and have to be retrieved on the command line to allow the action associated to the command";
 
 Command c2 = cp.Command("addParam", c2Description, 2, (c, p, a) => {
   Console.WriteLine("This line is displayed follwing the action defined for the command new.");
   Console.WriteLine("No parameter nor arguments have been defined for this command.");
   Console.WriteLine("You can retrieve the value of parameter thanks its field Value");
-  Console.WriteLine("p[0].Value will retrive the value of the first parameter \t\n");
+  Console.WriteLine("p[0].Value will retrieve the value of the first parameter \t\n");
  });
  
  c2.Parameters[0].Description = "This is the description of the first parameter. The name of the parameter is used for display. " + 
  "The description and the allocation of a name to a parameter is not mandatory. They are automatically defined thanks a constructor";
  c2.Parameters[1].Name = "Parameter2Name";
  c2.Parameters[1].Description = "A parameter name shall not contain a space.";
-
  c2.Parameters.Parameter("Param3", "Here we add a 3rd parameter by using a different method");
- '''
+ ```
 
