@@ -42,7 +42,7 @@ namespace MarkSpecs
 
                 var watch = System.Diagnostics.Stopwatch.StartNew();
 
-                if (Path.GetExtension(args[0]).Equals(".md"))
+                if (Path.GetExtension(args[0]).ToLower().Equals(".md"))
                 {
                     if (!File.Exists(args[0]))
                         Error("File does not exist.");
@@ -109,7 +109,12 @@ namespace MarkSpecs
             string content = File.ReadAllText(markdownFile);
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(envList);
             var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
-            GenerateHtmlFile(htmlFileName, htmlContent);
+
+            //retrieve the header file, if available
+            var dir = Path.GetDirectoryName(markdownFile);
+            var header = RetrieveHeaderFile(dir);
+
+            GenerateHtmlFile(htmlFileName, htmlContent, header);
         }
 
         /// <summary>
