@@ -111,8 +111,8 @@ namespace MarkSpecs
             var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
 
             //retrieve the header file, if available
-            var dir = Path.GetDirectoryName(markdownFile);
-            var header = RetrieveHeaderFile(dir);
+            string dir = Path.GetDirectoryName(markdownFile);
+            string header = RetrieveHeaderFile(dir);
 
             GenerateHtmlFile(htmlFileName, htmlContent, header);
         }
