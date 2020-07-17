@@ -18,8 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="advcmdparser\**" />
     <Compile Remove="markdig\**" />
+    <EmbeddedResource Remove="advcmdparser\**" />
     <EmbeddedResource Remove="markdig\**" />
+    <None Remove="advcmdparser\**" />
     <None Remove="markdig\**" />
   </ItemGroup>
 
@@ -28,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="advcmdparser\AdvCmdParser\AdvCmdParser.csproj" />
     <ProjectReference Include="markdig\src\Markdig\Markdig.csproj" />
   </ItemGroup>
 
@@ -62,6 +66,10 @@
     <None Update="vendors\plantuml.jar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

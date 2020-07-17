@@ -9,7 +9,7 @@ namespace MarkSpecs
 {
     /// <summary>
     /// Manage the PlantUml processes.
-    /// It is possible to launch several PlantUml processes. 
+    /// It is possible to launch several PlantUml processes.
     /// </summary>
     public class PlantUmlProcessManager : IDisposable
     {
@@ -23,6 +23,27 @@ namespace MarkSpecs
         private int initPort;
         private bool disposedValue;
 
+        public static bool IsReadyToLaunch()
+        {
+            var plantumlpath = ConfigurationManager.AppSettings["PlantUml.Path"];
+            var plantumlInstance = int.Parse(ConfigurationManager.AppSettings["PlantUml.InstancesCount"]);
+
+            if ((plantumlInstance > 0) && (!String.IsNullOrWhiteSpace(plantumlpath)))
+            {
+                if (!File.Exists(plantumlpath))
+                {
+                    //try to launch the local version of plantuml
+                    var localPlantUmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, plantumlpath);
+                    if (!File.Exists(localPlantUmlPath))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         //The constructor also launches the process.
         public PlantUmlProcessManager()
         {
@@ -34,7 +55,7 @@ namespace MarkSpecs
             if (!File.Exists(plantUmlPath))
                 throw new ApplicationException("plantuml.jar not found in " + plantUmlPath);
 
-            //Each PlantUml will have its own thread. 
+            //Each PlantUml will have its own thread.
             //WaitHandles is used to wait about all threads.
             WaitHandle[] waitHandles = new WaitHandle[instanceNb];
 
@@ -69,7 +90,7 @@ namespace MarkSpecs
                     Console.WriteLine("Process " + id + " " + argument);
                     process.Start();
                     handle.Set();
-                    
+
                     //Redirect the outputs to the Console.
                     process.OutputDataReceived += (s, e) => Console.WriteLine("[" + id + "]" + e.Data);
                     process.ErrorDataReceived += (s, e) => Console.WriteLine("[" + id + "]" + e.Data);

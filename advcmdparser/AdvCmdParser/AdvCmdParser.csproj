@@ -7,9 +7,9 @@
     <ProjectGuid>{D81A1C18-6ECD-4CAE-91F5-71C4292AAEEE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NagoyDede.CommandParser</RootNamespace>
+    <RootNamespace>NagoDede.AdvCmdParser</RootNamespace>
     <AssemblyName>CommandParser</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -43,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvCmdParser.cs" />
+    <Compile Include="ArgumentsList.cs" />
+    <Compile Include="Argument.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="CommandParser.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="ParameterList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
