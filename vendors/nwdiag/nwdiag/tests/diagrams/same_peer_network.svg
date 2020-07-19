@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg viewBox="0 0 456 732" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc>{
+  A -- B -- A -- B;
+
+  network {
+    B;
+    C;
+  }
+
+  network {
+    C;
+    D;
+  }
+}
+</desc>
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="104" x="155" y="162" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="104" x="155" y="306" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="104" x="307" y="450" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="104" x="155" y="594" />
+  <path d="M 131 391 L 435 391 A2,4 0 0 1 435 399 L 131 399 A2,4 0 0 1 131 391" fill="rgb(0,0,0)" style="filter:url(#filter_blur)" />
+  <path d="M 131 535 L 435 535 A2,4 0 0 1 435 543 L 131 543 A2,4 0 0 1 131 535" fill="rgb(0,0,0)" style="filter:url(#filter_blur)" />
+  <path d="M 128 388 L 432 388 A2,4 0 0 1 432 396 L 128 396 A2,4 0 0 1 128 388" fill="rgb(185,203,228)" stroke="rgb(0,0,0)" />
+  <path d="M 432 396 A2,4 0 0 1 432 388" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 128 388 L 432 388" fill="none" stroke="none" />
+  <path d="M 128 532 L 432 532 A2,4 0 0 1 432 540 L 128 540 A2,4 0 0 1 128 532" fill="rgb(185,203,228)" stroke="rgb(0,0,0)" />
+  <path d="M 432 540 A2,4 0 0 1 432 532" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 128 532 L 432 532" fill="none" stroke="none" />
+  <path d="M 204 104 L 204 156" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 204 196 L 204 248" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="104" x="152" y="156" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="204.0" y="181">A</text>
+  <path d="M 204 248 L 204 300" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 204 340 L 204 388" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="104" x="152" y="300" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="204.0" y="325">B</text>
+  <path d="M 356 396 L 356 444" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 356 484 L 356 532" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="104" x="304" y="444" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="356.0" y="469">C</text>
+  <path d="M 204 540 L 204 588" fill="none" stroke="rgb(0,0,0)" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="104" x="152" y="588" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="204.0" y="613">D</text>
+</svg>

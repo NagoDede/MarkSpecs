@@ -25,6 +25,37 @@ namespace NagoDede.AdvCmdParser
 
         #region Argument_Creators
 
+        /// <summary>
+        /// Return the value of the argument, if any.
+        /// If isLongName is true, will find the arguments by its longNa,e else by its Name.
+        /// </summary>
+        /// <param name="argName"></param>
+        /// <param name="isLongName"></param>
+        /// <returns></returns>
+        public string GetValue(string argName, bool isLongName = false)
+        {
+            if (isLongName)
+            {
+                foreach (Argument item in this)
+                {
+                    if (item.LongName.Equals(argName))
+                        return item.Value;
+                }
+            }
+            else
+            {
+                foreach (Argument item in this)
+                {
+                    if (item.Name.Equals(argName))
+                        return item.Value;
+                }
+            }
+
+            return String.Empty;
+
+        }
+
+
         //
         // specifying a longName for a command argument is not optional
         // on purpose.  it takes very little effort to specify one when building

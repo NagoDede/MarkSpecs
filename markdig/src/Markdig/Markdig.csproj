@@ -6,4 +6,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\Wavedrom\" />
+    <Folder Include="Extensions\VegaLite\" />
+    <Folder Include="Extensions\Vega\" />
+    <Folder Include="Extensions\RackDiag\" />
+    <Folder Include="Extensions\Packetdiag\" />
+    <Folder Include="Extensions\Syntrax\" />
+  </ItemGroup>
 </Project>

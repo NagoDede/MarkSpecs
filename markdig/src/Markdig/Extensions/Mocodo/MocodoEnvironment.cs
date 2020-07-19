@@ -137,7 +137,7 @@ namespace Markdig.Extensions.Mocodo
         /// <returns></returns>
         private static string RetriveMocodopath()
         {
-            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mocodo", "mocodo.py");
+            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"vendors\mocodo", "mocodo.py");
             if (File.Exists(mocodoPath))
                 return mocodoPath;
             else

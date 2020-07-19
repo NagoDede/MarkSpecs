@@ -47,6 +47,8 @@ namespace MarkSpecs.Launcher
         private static void Launch(ParameterList paramsList, ArgumentsList argsList)
         {
             var inputPath = paramsList.GetValue("inputFile");
+            string headerPath = argsList.GetValue("header", true);
+            string outFile = argsList.GetValue("out", true);
 
             Markdig.Extensions.EnvironmentList markdigEnvironmentList = new Markdig.Extensions.EnvironmentList();
             markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
@@ -60,12 +62,12 @@ namespace MarkSpecs.Launcher
                     MarkSpecs.Program.Error("File does not exist.");
 
                 if (File.Exists(inputPath))
-                    GenerateHtmlFileFromSingle(inputPath, markdigEnvironmentList);
+                    GenerateHtmlFileFromSingle(inputPath, headerPath, outFile, markdigEnvironmentList);
                 else if (!Path.GetExtension(inputPath).ToLower().Equals(".md"))
                     MarkSpecs.Program.Error("Unrecognized file extension. MD files only.");
             }
             else if (Directory.Exists(inputPath))
-                GeneratesHtmlFileFromDirectory(inputPath, markdigEnvironmentList);
+                GeneratesHtmlFileFromDirectory(inputPath, headerPath, outFile, markdigEnvironmentList);
             else
                 MarkSpecs.Program.Error("Not recognized command: " + inputPath);
 
@@ -95,7 +97,7 @@ namespace MarkSpecs.Launcher
         /// Use sorted files in accordance with the currentCulture information.
         /// </summary>
         /// <param name="path"></param>
-        private static void GeneratesHtmlFileFromDirectory(string path, Markdig.Extensions.EnvironmentList environmentList)
+        private static void GeneratesHtmlFileFromDirectory(string path, string headerPath, string outPath, Markdig.Extensions.EnvironmentList environmentList)
         {
             var mdFiles = Directory.GetFiles(path, "*.md", SearchOption.TopDirectoryOnly);
             Array.Sort(mdFiles, StringComparer.CurrentCulture);
@@ -119,8 +121,10 @@ namespace MarkSpecs.Launcher
 
             var joinnedHtml = String.Join(Environment.NewLine, outHtmls);
 
-            var fileName = Path.Combine(path, Path.GetFileName(path) + ".html");
-            var headerContent = RetrieveHeaderFile(path);
+            var fileName = GetOutFile(outPath, path);
+
+            string headerContent = RetrieveHeaderFile(headerPath, path);
+
             //Generate the final HTML file
             GenerateHtmlFile(fileName, joinnedHtml, headerContent);
         }
@@ -129,16 +133,17 @@ namespace MarkSpecs.Launcher
         /// Generate a HTML file from a single MD file.
         /// </summary>
         /// <param name="markdownFile"></param>
-        private static void GenerateHtmlFileFromSingle(string markdownFile, EnvironmentList envList)
+        private static void GenerateHtmlFileFromSingle(string markdownFile, string headerPath, string outPath, EnvironmentList envList)
         {
-            string htmlFileName = Path.ChangeExtension(markdownFile, ".html");
+            string htmlFileName = GetOutFile(outPath, markdownFile);
+
             string content = File.ReadAllText(markdownFile);
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build(envList);
             var htmlContent = Markdown.ToHtml(content, pipeline).Replace("\n", Environment.NewLine);
 
             //retrieve the header file, if available
             string dir = Path.GetDirectoryName(markdownFile);
-            string header = RetrieveHeaderFile(dir);
+            string header = RetrieveHeaderFile(headerPath, dir);
 
             GenerateHtmlFile(htmlFileName, htmlContent, header);
         }
@@ -162,19 +167,75 @@ namespace MarkSpecs.Launcher
         }
 
         /// <summary>
-        /// Retrieve the Header head.html file and gets its content.
+        /// Retrieve the content of the headerFil, if exist, else search the head.html file in Default Path.
         /// If the file does not exist, return an empty string.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private static string RetrieveHeaderFile(string path)
+        private static string RetrieveHeaderFile(string headerPath, string defaultPath)
         {
+            if (string.IsNullOrEmpty(headerPath))
             //Retrieve the Head
-            var headFile = Directory.GetFiles(path, "head.html", SearchOption.TopDirectoryOnly);
-            if (headFile.Length == 1)
-                return File.ReadAllText(headFile[0]);
+            {
+                var headFile = Directory.GetFiles(defaultPath, "head.html", SearchOption.TopDirectoryOnly);
+                if (headFile.Length == 1)
+                    return File.ReadAllText(headFile[0]);
+                else
+                    return String.Empty;
+            }
             else
-                return String.Empty;
+                return File.ReadAllText(headerPath);
         }
-    }
+
+        /// <summary>
+        /// Return the outFilePath if it's a valid path file name.
+        /// Else return the defaultPath, adapted in regard of the kind of path (directory or file)
+        /// </summary>
+        /// <param name="outFilePath"></param>
+        /// <param name="DefaultPath"></param>
+        /// <returns></returns>
+        private static string GetOutFile(string outFilePath, string DefaultPath)
+        {
+            if (string.IsNullOrEmpty(outFilePath))
+            {
+                if (Path.GetExtension(DefaultPath).Equals(".html"))
+                    return DefaultPath;
+                else
+                {
+                    bool isDir = File.GetAttributes(DefaultPath).HasFlag(FileAttributes.Directory);
+                    if (isDir)
+                        return Path.Combine(DefaultPath, Path.GetFileName(DefaultPath) + ".html");
+                    else
+                        return Path.ChangeExtension(DefaultPath, ".html");
+                }
+            }
+            else
+            {
+                try
+                {
+                    //Checkl the path is correct
+                    var mainDir = Path.GetDirectoryName(outFilePath);
+                    var root = Path.GetPathRoot(outFilePath);
+                    if (!string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' })) )
+                    {
+                        //if it is a directory
+                        bool isDir = File.GetAttributes(outFilePath).HasFlag(FileAttributes.Directory);
+                        if (isDir)
+                            return Path.Combine(outFilePath, Path.GetFileName(outFilePath) + ".html");
+                        else
+                            //looks to be a normal file
+                            return outFilePath;
+                    }
+                    else
+                        throw new FileNotFoundException($"{outFilePath} is not a valid output path");
+                }
+                catch
+                {
+                    throw new FileNotFoundException($"{outFilePath} is not a valid output path");
+                }
+
+                
+            }
+        }
+}
 }

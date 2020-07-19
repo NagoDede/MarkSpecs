@@ -19,17 +19,17 @@ namespace Markdig.Extensions.Mocodo
 /// </summary>
 ///
 
-    internal class Attributes : Dictionary<string, string>
+    internal class MocodoAttributes : Dictionary<string, string>
     {
         public bool RequestMldSvgDiagram { get; set; }
         public bool RequestMcdSvg { get; set; }
 
         public bool MldNameOverridesMcdName => (RequestMldSvgDiagram && RequestMcdSvg);
 
-        public Attributes(IDictionary<string, string> dic) : base(dic)
+        public MocodoAttributes(IDictionary<string, string> dic) : base(dic)
         { }
 
-        public Attributes() : base()
+        public MocodoAttributes() : base()
         { }
 
         public override string ToString()
@@ -52,7 +52,7 @@ namespace Markdig.Extensions.Mocodo
 
         private string defaultArgs = "--relations html --encoding utf8 --image_format svg";
 
-        private readonly static Attributes DefaultAttributes = new Attributes()
+        private readonly static MocodoAttributes DefaultAttributes = new MocodoAttributes()
         {
             { "relations", "html" },
             {"encoding", "utf8" },
@@ -164,16 +164,16 @@ namespace Markdig.Extensions.Mocodo
         /// <param name="attributes"></param>
         /// <param name="inputFile"></param>
         /// <returns></returns>
-        private Attributes GetIdentifiedAttrs(in List<KeyValuePair<string, string>> attributes, string inputFile)
+        private MocodoAttributes GetIdentifiedAttrs(in List<KeyValuePair<string, string>> attributes, string inputFile)
         {
             if ((attributes is null) || (attributes.Count == 0))
             {
-                Attributes attr = new Attributes(DefaultAttributes);
+                MocodoAttributes attr = new MocodoAttributes(DefaultAttributes);
                 attr.Add("input", inputFile);
                 return attr;
             }
 
-            Attributes identifiedAttributes = new Attributes();
+            MocodoAttributes identifiedAttributes = new MocodoAttributes();
             //add the input as an attribute
             identifiedAttributes.Add("input", inputFile);
 
@@ -270,11 +270,11 @@ namespace Markdig.Extensions.Mocodo
         /// The reauired mld file is generated thanks an initial call to RunMocodoCmd
         /// </summary>
         /// <param name="attr"></param>
-        private void GenerateSvgDiagram(in Attributes attr)
+        private void GenerateSvgDiagram(in MocodoAttributes attr)
         {
             string initialFile = attr["input"];
             bool overrideDefaultName = attr.MldNameOverridesMcdName;
-            Attributes svgDiagAttr = new Attributes(attr);
+            MocodoAttributes svgDiagAttr = new MocodoAttributes(attr);
 
             //remove the diagram in the relations definition
             if (svgDiagAttr.TryGetValue("relations", out string relations))
@@ -318,7 +318,7 @@ namespace Markdig.Extensions.Mocodo
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="attr"></param>
-        private List<string> GetMocodoFiles(Attributes attr)
+        private List<string> GetMocodoFiles(MocodoAttributes attr)
         {
             List<string> mocodoFiles = new List<string>();
 
@@ -353,7 +353,7 @@ namespace Markdig.Extensions.Mocodo
         /// <param name="mocodoFiles"></param>
         /// <param name="suffixFile"></param>
         /// <param name="imageOnly"></param>
-        private void FindRelevantFiles(Attributes attr, ref List<string> mocodoFiles, string suffixFile, bool imageOnly)
+        private void FindRelevantFiles(MocodoAttributes attr, ref List<string> mocodoFiles, string suffixFile, bool imageOnly)
         {
             var inputFile = attr["input"];
             var directory = Path.GetDirectoryName(inputFile);

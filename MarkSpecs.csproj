@@ -63,6 +63,18 @@
     <None Update="tests\03-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="vendors\nwdiag\bin\blockdiag.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="vendors\nwdiag\bin\nwdiag.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="vendors\nwdiag\bin\packetdiag.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="vendors\nwdiag\bin\rackdiag.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="vendors\plantuml.jar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -73,7 +85,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(robocopy $(SolutionDir)mocodo $(TargetDir)mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
+    <Exec Command="(robocopy $(SolutionDir)/vendors/mocodo $(TargetDir)/vendors/mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
   </Target>
 
 </Project>
