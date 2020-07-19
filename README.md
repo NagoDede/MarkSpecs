@@ -44,6 +44,7 @@ MarkSpecs introduces Diagrams by specific code blocks (initiated by three quotes
 |WaveDrom|Digital Timing Diagram|https://wavedrom.com/|PlantUml also supports timing diagram|
 |Mermaid| Multiple diagrams, mostly UML | https://mermaid-js.github.io/mermaid/#/| Generated thanks Javascript references in the header of the final file|
 |nomnoml|UML diagrams |https://github.com/skanaar/nomnoml| Generated thanks Javascript references in the header of the final file|
+|??|FaultTree generator| ??| Looking for a fault tree generator|
 ## About PlantUml
 PlantUml can provide several kinds of diagrams. If you want to generate charts by PlantUml in MarkSpecs, you have to launch PlantUml FTP servers by running the command   
 ```
