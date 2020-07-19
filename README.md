@@ -48,7 +48,7 @@ MarkSpecs introduces Diagrams by specific code blocks (initiated by three quotes
 PlantUml can provide several kinds of diagrams. If you want to generate charts by PlantUml in MarkSpecs, you have to launch PlantUml FTP servers by running the command   
 ```
 markspecs.exe plantumlserver
-``
+```
 before.  
 The command will launch several instances of the PlantUml servers (number of instances is defined in the application config file, or by the command line interface). Using several instances of PlantUml can save generation time, especially if you have multiple diagrams defined in several markdown files. Numerous instances give room for parallelization, and generation time can be, under some conditions, divided by two or more.
 
