@@ -130,12 +130,18 @@ namespace Markdig.Extensions.Mocodo
 
             var outData = GetFilesContent(generatedFiles);
 
+            //delete the files
+            generatedFiles.Add(tempMocodoFile);
+            DeleteFiles(generatedFiles);
             return outData;
+        }
 
-            //if (File.Exists(Path.Combine(Path.GetDirectoryName(mocodoEnvironment.MocodoPath), "sandbox.svg")))
-            //    return File.ReadAllText(Path.ChangeExtension(tempMocodoFile, ".svg"));//File.ReadAllText(Path.Combine(Path.GetDirectoryName(mocodoEnvironment.MocodoPath), "sandbox.svg"));
-            //else
-            //    return "<p>No MCD generated.</p>";
+        private void DeleteFiles(List<string> files)
+        {
+            foreach (var item in files)
+            {
+                File.Delete(item);
+            }
         }
 
         private string GetFilesContent(List<string> fileList)

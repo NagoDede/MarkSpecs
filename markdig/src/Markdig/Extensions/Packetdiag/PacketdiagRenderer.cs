@@ -5,24 +5,24 @@
 using Markdig.Renderers;
 using Markdig.Renderers.Html;
 
-namespace Markdig.Extensions.Nwdiag
+namespace Markdig.Extensions.Packetdiag
 {
     /// <summary>
-    /// A HTML renderer for a NwDiag.
+    /// A HTML renderer for PacketDiag.
     /// </summary>
     /// <seealso cref="HtmlObjectRenderer{T}" />
-    public class NwdiagRenderer : HtmlObjectRenderer<NwdiagBlock>
+    public class PacketdiagRenderer : HtmlObjectRenderer<PacketdiagBlock>
     {
-        private NwdiagEnvironment nwdiagEnvironment;
+        private PacketdiagEnvironment nwdiagEnvironment;
 
-        public NwdiagRenderer(NwdiagEnvironment nwdiagEnvironment)
+        public PacketdiagRenderer(PacketdiagEnvironment nwdiagEnvironment)
         {
             this.nwdiagEnvironment = nwdiagEnvironment;
         }
 
-        protected override void Write(HtmlRenderer renderer, NwdiagBlock obj)
+        protected override void Write(HtmlRenderer renderer, PacketdiagBlock obj)
         {
-            var mocodoRunner = new NwdiagRunner(this.nwdiagEnvironment);
+            var mocodoRunner = new PacketdiagRunner(this.nwdiagEnvironment);
             renderer.EnsureLine();
             renderer.Write("<div").WriteAttributes(obj).WriteLine(">");
             renderer.WriteLine(mocodoRunner.Run(obj));

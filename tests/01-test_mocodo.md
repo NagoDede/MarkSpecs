@@ -99,6 +99,36 @@ fc --> UC3
 @enduml
 ```
 
+This is a NwDiag.
+MarkSpecs will complete the description to add the "nwdiag{" at the beginning and  "}" at the end
+
+
+```nwdiag
+network Sample_front {
+    address = "192.168.10.0/24";
+
+    // define group
+    group web {
+      web01 [address = ".1"];
+      web02 [address = ".2"];
+    }
+  }
+  network Sample_back {
+    address = "192.168.20.0/24";
+    web01 [address = ".1"];
+    web02 [address = ".2"];
+    db01 [address = ".101"];
+    db02 [address = ".102"];
+
+    // define network using defined nodes
+    group db {
+      db01;
+      db02;
+    }
+  }
+```
+
+
 ```plantuml
 @startuml
 
@@ -108,6 +138,29 @@ User --> (Use the application) : A small label
 :Main Admin: ---> (Use the application) : This is\nyet another\nlabel
 
 @enduml
+```
+
+```packetdiag
+  colwidth = 32
+  node_height = 72
+
+  0-15: Source Port
+  16-31: Destination Port
+  32-63: Sequence Number
+  64-95: Acknowledgment Number
+  96-99: Data Offset
+  100-105: Reserved
+  106: URG [rotate = 270]
+  107: ACK [rotate = 270]
+  108: PSH [rotate = 270]
+  109: RST [rotate = 270]
+  110: SYN [rotate = 270]
+  111: FIN [rotate = 270]
+  112-127: Window
+  128-143: Checksum
+  144-159: Urgent Pointer
+  160-191: (Options and Padding)
+  192-223: data [colheight = 3]
 ```
 
 ```plantuml
@@ -184,6 +237,21 @@ db is "0xf23a"
 @:en_high+6
 db is "0x0000"
 @enduml
+```
+
+This is a rack diag schematic.
+```rackdiag
+// define height of rack
+  16U;
+
+  // define rack items
+  1: UPS [2U];
+  3: DB Server
+  4: Web Server
+  5: Web Server
+  6: Web Server
+  7: Load Balancer
+  8: L3 Switch
 ```
 
 ```plantuml

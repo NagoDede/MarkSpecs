@@ -10,8 +10,6 @@
     <Folder Include="Extensions\Wavedrom\" />
     <Folder Include="Extensions\VegaLite\" />
     <Folder Include="Extensions\Vega\" />
-    <Folder Include="Extensions\RackDiag\" />
-    <Folder Include="Extensions\Packetdiag\" />
     <Folder Include="Extensions\Syntrax\" />
   </ItemGroup>
 </Project>

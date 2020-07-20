@@ -131,8 +131,18 @@ namespace Markdig
                     //Load the defined environment to the extension
                     if (extension is Extensions.IExtensionEnvironment)
                     { var extensionEnv = (Markdig.Extensions.IExtensionEnvironment)extension;
-                        var env = environments[extensionEnv.ExtensionName];
-                        extensionEnv.SetEnvironment(env);
+                        //if the environment has been defined outside, use it
+                        if (environments.ContainsKey(extensionEnv.ExtensionName))
+                        {
+                            var env = environments[extensionEnv.ExtensionName];
+                            extensionEnv.SetEnvironment(env);
+                        }
+                        else
+                        {//if no external definition, loads the default environment
+                            Console.WriteLine("Use default environment for " + extensionEnv.ExtensionName);
+                            var env = extensionEnv.DefaultEnvironment;
+                            extensionEnv.SetEnvironment(env);
+                        }
                     }
                         extension.Setup(this);
                 }

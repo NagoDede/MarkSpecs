@@ -7,22 +7,18 @@ using Markdig.Renderers;
 namespace Markdig.Extensions.Nwdiag
 {
     /// <summary>
-    /// Extension for adding mocodo commands.
-    /// Markdig will execute the mocodo commands to generates the outputs.
-    ///
+    /// Extension for adding NwDiag schematics.
+    /// Request nwdiag.exe. Exact path is retrieved by the Environment.
     /// </summary>
     /// <seealso cref="IMarkdownExtension" />
     public class NwdiagExtension : IMarkdownExtension, IExtensionEnvironment
     {
-        private NwdiagEnvironment NwdiagEnvironment;
+        private NwdiagEnvironment Environment;
 
         string IExtensionEnvironment.ExtensionName => "nwdiag";
 
-
-
         public NwdiagExtension()
         {
-
         }
 
         public void Setup(MarkdownPipelineBuilder pipeline)
@@ -41,14 +37,14 @@ namespace Markdig.Extensions.Nwdiag
             {
                 if (!htmlRenderer.ObjectRenderers.Contains<NwdiagRenderer>())
                 {
-                    htmlRenderer.ObjectRenderers.Insert(0, new NwdiagRenderer(NwdiagEnvironment));
+                    htmlRenderer.ObjectRenderers.Insert(0, new NwdiagRenderer(this.Environment));
                 }
             }
         }
 
         public void SetEnvironment(ExtensionEnvironment env)
         {
-            this.NwdiagEnvironment = (NwdiagEnvironment)env;
+            this.Environment = (NwdiagEnvironment)env;
         }
 
         ExtensionEnvironment IExtensionEnvironment.DefaultEnvironment { get => new NwdiagEnvironment(); }

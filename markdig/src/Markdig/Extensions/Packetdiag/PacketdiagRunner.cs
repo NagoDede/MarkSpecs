@@ -6,25 +6,26 @@ using Markdig.Helpers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Markdig.Extensions.Nwdiag
-{/// <summary>
-/// Launch nwdiag by using the path defined in the environment.
-/// </summary>
-
-    public class NwdiagRunner
+namespace Markdig.Extensions.Packetdiag
+{
+    /// <summary>
+    /// Launch packetdiag by using the path defined in the environment.
+    /// </summary>
+    public class PacketdiagRunner
     {
         public HtmlAttributes Args { get; set; }
-        private NwdiagEnvironment nwdiagEnvironment;
+        private PacketdiagEnvironment Environment;
 
-        private string defaultArgs = "-Tsvg"; //Request the SVG generation
+        private string defaultArgs = "-Tsvg";
 
-        public NwdiagRunner(NwdiagEnvironment environment)
+        public PacketdiagRunner(PacketdiagEnvironment environment)
         {
-            this.nwdiagEnvironment = environment;
+            this.Environment = environment;
         }
 
         public string Run(LeafBlock dataIn)
@@ -41,7 +42,8 @@ namespace Markdig.Extensions.Nwdiag
             var svgOut = Path.ChangeExtension(tempNwdiagFile, "svg");
             var outData = GetFilesContent(svgOut);
 
-            //Delete the tempFiles
+            //Delete the tempFile
+
             File.Delete(tempNwdiagFile);
             File.Delete(svgOut);
 
@@ -52,7 +54,7 @@ namespace Markdig.Extensions.Nwdiag
         {
             StreamWriter tw = new StreamWriter(path, false, new UTF8Encoding());
 
-            tw.WriteLine("nwdiag{"); //add the nwdiag header
+            tw.WriteLine("{");
 
             if (leafBlock == null) ThrowHelper.ArgumentNullException_leafBlock();
 
@@ -70,6 +72,7 @@ namespace Markdig.Extensions.Nwdiag
             }
         }
 
+
         private string GetFilesContent(string filePath)
         {
             StringBuilder sb = new StringBuilder();
@@ -85,21 +88,15 @@ namespace Markdig.Extensions.Nwdiag
 
             var content = sb.ToString();
 
-            //remove the <!DOC... and other HTML data, they are not necessary for our needs.
             return Helpers.SvgHelper.KeepOnlySvgDefinition(content);
         }
 
-        /// <summary>
-        /// Execute Nwdiag with the appropriate arguments on the indicated file.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <param name="filePath"></param>
         private void RunNwdiagCmd(string args, string filePath)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            start.WorkingDirectory = Path.GetDirectoryName(nwdiagEnvironment.NwdiagPath);
-            start.FileName = Path.GetFileName(nwdiagEnvironment.NwdiagPath);
-            start.Arguments = args + " " + filePath;
+            start.WorkingDirectory = Path.GetDirectoryName(Environment.NwdiagPath);
+            start.FileName = Path.GetFileName(Environment.NwdiagPath);
+            start.Arguments =   args + " " + filePath;
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
 

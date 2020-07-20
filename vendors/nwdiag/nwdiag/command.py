@@ -29,3 +29,6 @@ class NwdiagApp(Application):
 
 def main(args=sys.argv[1:]):
     return NwdiagApp().run(args)
+    
+if __name__ == '__main__':
+    main(sys.argv[1:])

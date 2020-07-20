@@ -5,33 +5,33 @@
 using System;
 using System.IO;
 
-namespace Markdig.Extensions.Nwdiag
+namespace Markdig.Extensions.Packetdiag
 {
     /// <summary>
-    /// Defines the python environment for Mocodo.
+    /// Defines the environment for PacketDiag
     /// </summary>
-    public class NwdiagEnvironment : ExtensionEnvironment
+    public class PacketdiagEnvironment : ExtensionEnvironment
     {
-        public override string ExtensionName { get => "nwdiag"; }
+        public override string ExtensionName { get => "packetdiag"; }
 
         public string NwdiagPath
         {
             get
             {
-                return this["NwdiagPath"];
+                return this["PacketdiagPath"];
             }
 
             private set
             {
-                this["NwdiagPath"] = value;
+                this["PacketdiagPath"] = value;
             }
         }
 
-        public NwdiagEnvironment()
+        public PacketdiagEnvironment()
         {
             try
             {
-                this.NwdiagPath = RetrieveNwdiagPath();
+                this.NwdiagPath = RetrievePacketdiagPath();
             }
             catch (NullReferenceException)
             {
@@ -39,23 +39,22 @@ namespace Markdig.Extensions.Nwdiag
             }
         }
 
-
-        public NwdiagEnvironment(string nwdiagPath)
+        public PacketdiagEnvironment(string nwdiagPath)
         {
             this.NwdiagPath = nwdiagPath;
         }
 
         /// <summary>
-        /// Retrieve NwDiag from the environment.
+        /// Retrieve PackDiag.exe from the context.
         /// </summary>
         /// <returns></returns>
-        private static string RetrieveNwdiagPath()
+        private static string RetrievePacketdiagPath()
         {
-            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"vendors\nwdiag\bin", "nwdiag.exe");
+            string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"vendors\nwdiag\bin", "packetdiag.exe");
             if (File.Exists(mocodoPath))
                 return mocodoPath;
             else
-                throw new NullReferenceException("Unable to find Nwdiag path");
+                throw new NullReferenceException("Unable to find packetdiag path");
         }
     }
 }

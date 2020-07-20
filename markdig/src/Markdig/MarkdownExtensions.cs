@@ -34,6 +34,9 @@ using Markdig.Extensions.Yaml;
 using Markdig.Extensions.Sections;
 using Markdig.Extensions.Mocodo;
 using Markdig.Extensions.PlantUml;
+using Markdig.Extensions.Nwdiag;
+using Markdig.Extensions.Packetdiag;
+using Markdig.Extensions.Rackdiag;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -92,6 +95,9 @@ namespace Markdig
                 .UseMathematics()
                 .UseMocodo()
                 .UsePlantUml()
+                .UseNwdiag()
+                .UsePacketdiag()
+                .UseRackdiag()
                 .UseMediaLinks()
                 .UsePipeTables()
                 .UseListExtras()
@@ -247,6 +253,47 @@ namespace Markdig
             return pipeline;
         }
 
+        /// <summary>
+        /// Uses the Nwdiag diagram <see cref="http://blockdiag.com/en/index.html"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseNwdiag(this MarkdownPipelineBuilder pipeline)
+        {
+            if (!pipeline.Extensions.Contains<NwdiagExtension>())
+            {
+                pipeline.Extensions.Add(new NwdiagExtension());
+            }
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the packetdiag diagram <see cref="http://blockdiag.com/en/nwdiag/packetdiag-examples.html"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UsePacketdiag(this MarkdownPipelineBuilder pipeline)
+        {
+            if (!pipeline.Extensions.Contains<PacketdiagExtension>())
+            {
+                pipeline.Extensions.Add(new PacketdiagExtension());
+            }
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the rackdiag diagram <see cref="http://blockdiag.com/en/nwdiag/rackdiag-examples.html"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseRackdiag(this MarkdownPipelineBuilder pipeline)
+        {
+            if (!pipeline.Extensions.Contains<RackdiagExtension>())
+            {
+                pipeline.Extensions.Add(new RackdiagExtension());
+            }
+            return pipeline;
+        }
 
         /// <summary>
         /// Uses the media extension.
@@ -636,6 +683,15 @@ namespace Markdig
                         break;
                     case "plantuml":
                         pipeline.UsePlantUml();
+                        break;
+                    case "nwdiag":
+                        pipeline.UseNwdiag();
+                        break;
+                    case "packetdiag":
+                        pipeline.UsePacketdiag();
+                        break;
+                    case "rackdiag":
+                        pipeline.UseRackdiag();
                         break;
                     case "smartypants":
                         pipeline.UseSmartyPants();

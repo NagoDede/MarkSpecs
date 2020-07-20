@@ -53,6 +53,7 @@ namespace MarkSpecs.Launcher
             Markdig.Extensions.EnvironmentList markdigEnvironmentList = new Markdig.Extensions.EnvironmentList();
             markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
             markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
+            markdigEnvironmentList.Add(new Markdig.Extensions.Nwdiag.NwdiagEnvironment());
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
 

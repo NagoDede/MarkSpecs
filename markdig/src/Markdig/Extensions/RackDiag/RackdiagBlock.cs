@@ -6,17 +6,18 @@ using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Syntax;
 
-namespace Markdig.Extensions.Nwdiag
+namespace Markdig.Extensions.Rackdiag
 {
     /// <summary>
-    /// A NwDiag block.
-    /// Defined by ```nwdiag
+    /// A rackdiag block.
+    /// Identified by ```rackdiag
     /// </summary>
-    public class NwdiagBlock : SpecificFencedCodeBlock
+    /// <seealso cref="FencedCodeBlock" />
+    public class RackdiagBlock : SpecificFencedCodeBlock
     {
-        public NwdiagBlock(BlockParser parser) : base(parser)
+        public RackdiagBlock(BlockParser parser) : base(parser)
         {
-            this.SpecificSelector = "nwdiag";
+            this.SpecificSelector = "rackdiag";
         }
 
         public StringSlice Parameters { get; set; }
