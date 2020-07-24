@@ -38,7 +38,7 @@ MarkSpecs introduces Diagrams by specific code blocks (initiated by three quotes
 |NwDiag|Network Diagrams|http://blockdiag.com/en/nwdiag/introduction.html#setup| Also included in PlantUml|
 |PackDiag|Packet header diagram images|http://blockdiag.com/en/nwdiag/index.html| Provided by NwDiag|
 |RackDiag|Rack-structure diagram images|http://blockdiag.com/en/nwdiag/index.html| Provided by NwDiag|
-|Syntrax|Railroad diagram (visual illustration of the grammar used for programming languages)|https://kevinpt.github.io/syntrax/|
+|Railroad-Diagram|Railroad diagram (visual illustration of the grammar used for programming languages)https://github.com/tabatkins/railroad-diagrams|
 |Vega|Declarative language for interactive visualization designs|https://vega.github.io/vega/|
 |VegaLite|Data visualizations |https://vega.github.io/vega-lite/|
 |WaveDrom|Digital Timing Diagram|https://wavedrom.com/|PlantUml also supports timing diagram|
@@ -57,4 +57,105 @@ The command will launch several instances of the PlantUml servers (number of ins
 ## About Mermaid and nomnoml
 Mermaid and nomnoml diagrams are generated thanks Javascript libraries defined in an HTML header file provided to MarkSpecs by the <-h|--header> parameter.
 
+# More information about the modules
+## Mocodo
+### Aim
+### Installation and Configuration
+### Syntax
+### Licence
+## Plantuml syntax
+### Aim
+### Installation and Configuration
+### Syntax
+### Licence
+## NwDiag syntax
+### Aim
+### Installation and Configuration
+### Syntax
+### Licence
+## PackDiag syntax
+### Aim
+### Installation and Configuration
+### Syntax
+### Licence
+## RackDiag syntax
+### Aim
+### Installation and Configuration
+### Syntax
+### Licence
+## Railroad-Diagram
+### Generalities
+RailRoad-Diagram is used to generate RailRoad Diagrams
+<img src="https://github.com/tabatkins/railroad-diagrams/raw/gh-pages/images/rr-title.svg?sanitize=true" width="2000" style="max-width:100%;">
+Railroad diagrams are mostly used to define software language grammar, as you can see on https://www.json.org/json-en.html.But they may be used for other purpose.  
+The diagrams are generated in SVG format by a Python script created from scracth by Markspecs. The script will refer to the Railroad-diagram Python library (available https://github.com/tabatkins/railroad-diagrams). The path to the library is set in the configuration file.
+### Prerequisite
+Python > 3.8 (tested configuration, should be OK with any version > 3.1).
+### Installation and Configuration
+By default, MarkSpecs is provided with the RailRoad-diagrams library provided in the vendor/railroad directory. 
+To update the RailRoad-Diagrams library, your are free to replace the content of the directory by a new version of the library, or you can set the new version in a directory of your choice and update the MarkSpecs configuration file.
+### Syntax
+Refer to https://github.com/tabatkins/railroad-diagrams to know the syntax.  
+In the markdown file, you don't have to provide the Diagram object. You only need to provide the list of diagam items, as in the exemple below:
+<pre>
+  ```railroad
+   Optional('+', 'skip'),
+  Choice(0,
+    NonTerminal('name-start char'),
+    NonTerminal('escape')),
+  ZeroOrMore(
+    Choice(0,
+      NonTerminal('name char'),
+      NonTerminal('escape')))
+  ```
+</pre>
+This exemple will lead MarkSpecs to generate the Python Script
+```python
+import sys
+import importlib.util
+spec = importlib.util.spec_from_file_location("railroad", "C:/Temp/railroad-diagrams-gh-pages/railroad.py")
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module 
+spec.loader.exec_module(module)
+        
+from railroad import *
+d = Diagram(
+  Optional('+', 'skip'),
+  Choice(0,
+    NonTerminal('name-start char'),
+    NonTerminal('escape')),
+  ZeroOrMore(
+    Choice(0,
+      NonTerminal('name char'),
+      NonTerminal('escape'))))
+d.writeSvg(sys.stdout.write)
+```
+  
 
+### Licence
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)  
+This document and all associated files in the github project https://github.com/tabatkins/railroad-diagrams are licensed under CC0. This means you can reuse, remix, or otherwise appropriate RailRoad-Diagrams project for your own use without restriction.
+### SVG data generation
+The SVG data are generated through a Python script created on the flag by MarkSpecs. One of the difficulties is to refer to the RailRoad-Diagrams library by providing an absolute path (Python management of the libraries, modules,... has some specificities). Maybe a more efficient solution exists...
+
+A typical python file created on the flag, may look:
+```python
+import sys
+import importlib.util
+spec = importlib.util.spec_from_file_location("railroad", "C:/Specific_Path/.../railroad/railroad.py")
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module 
+spec.loader.exec_module(module)
+        
+from railroad import *
+d = Diagram(
+  Optional('+', 'skip'),
+  Choice(0,
+    NonTerminal('name-start char'),
+    NonTerminal('escape')),
+  ZeroOrMore(
+    Choice(0,
+      NonTerminal('name char'),
+      NonTerminal('escape'))))
+d.writeSvg(sys.stdout.write)
+```
