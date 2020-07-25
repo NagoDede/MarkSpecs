@@ -68,6 +68,19 @@ fc --> UC3
 @enduml
 ```
 
+## Here it's a railroad diagram
+```railroad
+   Optional('+', 'skip'),
+  Choice(0,
+    NonTerminal('name-start char'),
+    NonTerminal('escape')),
+  ZeroOrMore(
+    Choice(0,
+      NonTerminal('name char'),
+      NonTerminal('escape')))
+  ```
+
+
 ```plantuml
 @startuml
 

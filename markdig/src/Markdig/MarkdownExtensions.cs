@@ -37,6 +37,7 @@ using Markdig.Extensions.PlantUml;
 using Markdig.Extensions.Nwdiag;
 using Markdig.Extensions.Packetdiag;
 using Markdig.Extensions.Rackdiag;
+using Markdig.Extensions.Railroad;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -94,6 +95,7 @@ namespace Markdig
                 .UseGridTables()
                 .UseMathematics()
                 .UseMocodo()
+                .UseRailRoad()
                 .UsePlantUml()
                 .UseNwdiag()
                 .UsePacketdiag()
@@ -235,6 +237,20 @@ namespace Markdig
             if (!pipeline.Extensions.Contains<MocodoExtension>())
             {
                 pipeline.Extensions.Add(new MocodoExtension());
+            }
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the RailRoad diagram <see cref="http://www.mocodo.net/"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseRailRoad(this MarkdownPipelineBuilder pipeline)
+        {
+            if (!pipeline.Extensions.Contains<RailroadExtension>())
+            {
+                pipeline.Extensions.Add(new RailroadExtension());
             }
             return pipeline;
         }
@@ -680,6 +696,9 @@ namespace Markdig
                         break;
                     case "mocodo":
                         pipeline.UseMocodo();
+                        break;
+                    case "railroad":
+                        pipeline.UseRailRoad();
                         break;
                     case "plantuml":
                         pipeline.UsePlantUml();
