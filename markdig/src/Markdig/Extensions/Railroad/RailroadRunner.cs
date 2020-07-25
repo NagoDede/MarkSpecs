@@ -31,7 +31,9 @@ namespace Markdig.Extensions.Railroad
         public string Run(LeafBlock dataIn)
         {
             //We use temporary files to avoid possible read/write problems
-            var tempRailroadPythonFile = Path.GetTempFileName();
+
+            var tempRailroadPythonFile = Path.Combine(Path.GetTempPath(), "railroad_gen.py");
+            Console.WriteLine("Execute RailRoad Python script: " + tempRailroadPythonFile);
             var tempSvgFile = this.WritePythonScriptInFile(tempRailroadPythonFile, dataIn);
             //In all case, need to generate the basic files
             RunRailroadCmd(tempRailroadPythonFile);
@@ -51,7 +53,7 @@ namespace Markdig.Extensions.Railroad
 
         private string GetFilesContent(string svgFile)
         {
-            if (svgFile is null)
+            if (svgFile is null || !File.Exists(svgFile))
                 return "<p>No SVG file generated.</p>";
 
             return File.ReadAllText(svgFile);
@@ -100,16 +102,22 @@ namespace Markdig.Extensions.Railroad
             {
                 var lines = leafBlock.Lines;
                 var slices = lines.Lines;
+
+                var lastLineId = lines.Count - 1;
+
                 for (int i = 0; i < lines.Count; i++)
                 {
-                    tw.WriteLine(@slices[i].Slice.ToString());
+                    if (i < lastLineId)
+                        tw.WriteLine(@slices[i].Slice.ToString());
+                    else
+                        tw.WriteLine(@slices[i].Slice.ToString() + ")");
+                    //close the ) of the diagram
                 }
             }
 
-            tw.Write(")");
             string tempScriptPath = Path.Combine(Path.GetTempPath(), "railroad.svg").Replace(@"\", "/"); //Best way for python to manage path
 
-            tw.Write($"f = open(\"{tempScriptPath}\", \"w\")");
+            tw.WriteLine($"f = open(\"{tempScriptPath}\", \"w\")");
             tw.WriteLine("d.writeSvg(f.write)");
 
             tw.Flush();

@@ -85,7 +85,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(robocopy $(SolutionDir)/vendors/mocodo $(TargetDir)/vendors/mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
+    <Exec Command="(robocopy $(SolutionDir)/vendors/mocodo $(TargetDir)/vendors/mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md&#xD;&#xA;robocopy $(SolutionDir)/vendors/railroad $(TargetDir)/vendors/railroad /S /PURGE /XD doc logos .git .vs images tests /XF .gitignore sandbox*.*  *.html *.md *.gitattributes *.js* setup.py test.py)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
   </Target>
 
 </Project>
