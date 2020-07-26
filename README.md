@@ -130,8 +130,6 @@ d = Diagram(
       NonTerminal('escape'))))
 d.writeSvg(sys.stdout.write)
 ```
-  
-
 ### Licence
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)  
 This document and all associated files in the github project https://github.com/tabatkins/railroad-diagrams are licensed under CC0. This means you can reuse, remix, or otherwise appropriate RailRoad-Diagrams project for your own use without restriction.
@@ -159,3 +157,97 @@ d = Diagram(
       NonTerminal('escape'))))
 d.writeSvg(sys.stdout.write)
 ```
+## Schemdraw
+### Aim
+Allows you to draw electronic schematics or logical schematics.  
+### Installation and Configuration
+Requires Python >3.7, numpy and matplotlib
+```
+pip install numpy
+pip install matplotlib
+```
+Sources are available on bitbucket https://bitbucket.org/cdelker/schemdraw/downloads/
+For convenience, I dowwnload the project and extract the low level schemdraw directory, and zip the content in a new file. By this way, it's easy to import the Python project by using zipimport.  
+The content of the zipfile follows the schem:
+''' 
+schemdraw.zip
+  |
+  +-schemdraw (directory)
+    |
+    + __init__.py
+    + schemdraw.py
+    + ...
+    + backends (directory)
+    + dsp (directory)
+    + elements (directory)
+    + (other directoris)
+''' 
+This is an intersting approach to provide a way to update easily Schemdraw without impact on MarkSpecs. But you have to remember that Schemdraw request Matplotlib and Numpy.  
+Unfortunately, it also means you have to install the Matplotlib and numpy libraries on your Python environment to run Schemdraw through Markspecs. I am not a Python expert, so instead of a fight with Python and its libraries, I provide the sources of the tools and the user is free to change the way to import the libraries by an update of the _schemdraw-header.txt_ file.  
+The _schemdraw-header.txt_ file contains the definition of the imports. So, if you want to change the way to import the libraries, your are free to go.  
+The current definition of the header file is:
+```python
+#Start of header
+import sys
+import zipimport
+importer = zipimport.zipimporter("{path_of_schemdraw.zip}") 
+mod=importer.load_module('schemdraw')
+import schemdraw
+import schemdraw.elements as elm
+#End of header
+```
+The _{path_of_schemdraw.zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _{path_of_schemdraw.zip}_ keyword.
+
+### Syntax
+MarkSpecs simplifies the syntax in regard of the Python syntax. There is no need to refer to the Drawing.Add() to build a schematic.  
+The MarkSpecs syntax becomes more easy and straighforaward than the original Schemdraw commands as MarkSpecs will complete the description to get the Python commands.
+```
+Resistor(d='right', label='1$\Omega$')
+Capacitor(d='down', label='10$\mu$F')
+Line(d='left')
+SourceSin(d='up', label='10V')
+```
+Is equivalent to the Python commands
+```python
+d = schemdraw.Drawing()
+d.add(elm.Resistor(d='right', label='1$\Omega$'))
+d.add(elm.Capacitor(d='down', label='10$\mu$F'))
+d.add(elm.Line(d='left'))
+d.add(elm.SourceSin(d='up', label='10V'))
+```
+For general syntax, refer to https://schemdraw.readthedocs.io/en/latest/index.html.
+### SVG data generation
+Typicall exemple of use:
+```
+  ```schemdraw
+  Resistor(d='right', label='1$\Omega$')
+  Capacitor(d='down', label='10$\mu$F')
+  Line(d='left')
+  SourceSin(d='up', label='10V')
+  ```
+```
+Will lead to the temporary Python file:
+```python
+#Start of header
+import sys
+import zipimport
+importer = zipimport.zipimporter("c:/Markspecs/vendors/schemdraw.zip") 
+mod=importer.load_module('schemdraw')
+import schemdraw
+import schemdraw.elements as elm
+#End of header
+d = schemdraw.Drawing()
+d.add(elm.Resistor(d='right', label='1$\Omega$'))
+d.add(elm.Capacitor(d='down', label='10$\mu$F'))
+d.add(elm.Line(d='left'))
+d.add(elm.SourceSin(d='up', label='10V'))
+d.save("c:/Temp/temp.svg")
+```
+### Licence
+[MIT Licence](https://mit-license.org/)
+Copyright (c) 2014-2020 Collin J. Delker
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
