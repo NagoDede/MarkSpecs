@@ -84,8 +84,35 @@
     <Folder Include="Helper\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(robocopy $(SolutionDir)/vendors/mocodo $(TargetDir)/vendors/mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md&#xD;&#xA;robocopy $(SolutionDir)/vendors/railroad $(TargetDir)/vendors/railroad /S /PURGE /XD doc logos .git .vs images tests /XF .gitignore sandbox*.*  *.html *.md *.gitattributes *.js* setup.py test.py)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
-  </Target>
+  <ItemGroup>
+        <MocodoFiles Include="$(SolutionDir)/vendors/mocodo/**/*.*" 
+        Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md"/>
+        
+        <RailRoadFiles Include="$(SolutionDir)/vendors/railroad/**/*.*" 
+        Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md;**/*.gitattributes;**/*.js*;**/setup.py;**/test.py"/>
+    </ItemGroup>
+
+      <!--Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="(robocopy $(SolutionDir)/vendors/mocodo $(TargetDir)/vendors/mocodo /S /PURGE /XD doc logos .git .vs magic web tests /XF .gitignore /XF .gitignore sandbox*.*  *.html *.md&#xD;&#xA;
+    robocopy $(SolutionDir)/vendors/railroad $(TargetDir)/vendors/railroad /S /PURGE /XD doc logos .git .vs images tests /XF .gitignore sandbox*.*  *.html *.md *.gitattributes *.js* setup.py test.py)^&amp; IF %25ERRORLEVEL%25 LEQ 1 exit 0" />
+  </Target-->
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Copy
+            SourceFiles="@(MocodoFiles)"
+            DestinationFiles="@(MocodoFiles->'$(TargetDir)\vendors\mocodo\%(RecursiveDir)%(Filename)%(Extension)')"
+        />
+        <Copy
+            SourceFiles="@(RailRoadFiles)"
+            DestinationFiles="@(RailRoadFiles->'$(TargetDir)\vendors\railroad\%(RecursiveDir)%(Filename)%(Extension)')"
+        />
+    </Target>
+  
+    <Target Name="ZipSchemdraw" AfterTargets="PostBuildEvent">
+        <ZipDirectory
+            SourceDirectory="$(SolutionDir)/vendors/schemdraw/schemdraw"
+            DestinationFile="$(TargetDir)/vendors/schemdraw.zip" 
+            Overwrite="true" />
+    </Target>
 
 </Project>
