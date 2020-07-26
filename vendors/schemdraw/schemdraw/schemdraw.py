@@ -208,7 +208,7 @@ class Drawing(object):
         self.add(element)
         return element
 
-    def draw(self, showframe=False):
+    def draw(self, showframe=False, show=True):
         ''' Draw the schematic
 
             Parameters
@@ -221,7 +221,8 @@ class Drawing(object):
                      showframe=showframe)
         for element in self.elements:
             element.draw(fig)
-        fig.show()  # Show figure in window if not inline/Jupyter mode
+        if show:
+            fig.show()  # Show figure in window if not inline/Jupyter mode
         return fig  # Otherwise return Figure and let _repr_ display it
 
     def save(self, fname, transparent=True, dpi=72):
@@ -237,5 +238,5 @@ class Drawing(object):
             dpi : float
                 Dots-per-inch for raster formats
         '''
-        fig = self.draw()
+        fig = self.draw(show=False)
         fig.save(fname, transparent=transparent, dpi=dpi)
