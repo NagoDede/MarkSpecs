@@ -166,8 +166,8 @@ Requires Python >3.7, numpy and matplotlib
 pip install numpy
 pip install matplotlib
 ```
-Sources are available on bitbucket https://bitbucket.org/cdelker/schemdraw/downloads/
-For convenience, I dowwnload the project and extract the low level schemdraw directory, and zip the content in a new file. By this way, it's easy to import the Python project by using zipimport.  
+Sources are available on bitbucket https://bitbucket.org/cdelker/schemdraw/downloads/  
+For convenience, I download the project, extract the low level schemdraw directory, and zip the content in a new file. Thanks the zip, it becomes easy to import the Python project by using _zipimport_.    
 The content of the zipfile follows the schem:
 ''' 
 schemdraw.zip
@@ -182,8 +182,9 @@ schemdraw.zip
     + elements (directory)
     + (other directoris)
 ''' 
-This is an intersting approach to provide a way to update easily Schemdraw without impact on MarkSpecs. But you have to remember that Schemdraw request Matplotlib and Numpy.  
-Unfortunately, it also means you have to install the Matplotlib and numpy libraries on your Python environment to run Schemdraw through Markspecs. I am not a Python expert, so instead of a fight with Python and its libraries, I provide the sources of the tools and the user is free to change the way to import the libraries by an update of the _schemdraw-header.txt_ file.  
+This is an intersting approach to provide a way to update easily Schemdraw without impact on MarkSpecs. But you have to remember that Schemdraw request Matplotlib and Numpy.   
+Unfortunately, it also means you have to install the Matplotlib and Numpy libraries on your Python environment to run Schemdraw through Markspecs.  
+I am not a Python expert, so instead of a fight with Python and its libraries (or do other solutions, like making an exe...), I provide the sources of the tools and the user is free to change the way to import the libraries by an update of the _schemdraw-header.txt_ file.  
 The _schemdraw-header.txt_ file contains the definition of the imports. So, if you want to change the way to import the libraries, your are free to go.  
 The current definition of the header file is:
 ```python
@@ -199,7 +200,7 @@ import schemdraw.elements as elm
 The _{path_of_schemdraw.zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _{path_of_schemdraw.zip}_ keyword.
 
 ### Syntax
-MarkSpecs simplifies the syntax in regard of the Python syntax. There is no need to refer to the Drawing.Add() to build a schematic.  
+MarkSpecs simplifies the syntax in regard of the original Schemdraw qyntax. There is no need to refer to the Drawing.Add() to build a schematic.  
 The MarkSpecs syntax becomes more easy and straighforaward than the original Schemdraw commands as MarkSpecs will complete the description to get the Python commands.
 ```
 Resistor(d='right', label='1$\Omega$')
@@ -218,14 +219,14 @@ d.add(elm.SourceSin(d='up', label='10V'))
 For general syntax, refer to https://schemdraw.readthedocs.io/en/latest/index.html.
 ### SVG data generation
 Typicall exemple of use:
+<pre>
+```schemdraw
+Resistor(d='right', label='1$\Omega$')
+Capacitor(d='down', label='10$\mu$F')
+Line(d='left')
+SourceSin(d='up', label='10V')
 ```
-  ```schemdraw
-  Resistor(d='right', label='1$\Omega$')
-  Capacitor(d='down', label='10$\mu$F')
-  Line(d='left')
-  SourceSin(d='up', label='10V')
-  ```
-```
+</pre>
 Will lead to the temporary Python file:
 ```python
 #Start of header
