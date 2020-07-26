@@ -1,0 +1,12 @@
+dist
+build
+docs/_build
+.idea/.name
+.idea/misc.xml
+.idea/modules.xml
+.idea/schemdraw.iml
+.idea/vcs.xml
+.idea/workspace.xml
+*.ipynb_checkpoints
+*.egg-info
+*__pycache__
