@@ -17,319 +17,176 @@ Matière: Libellé matière
 Enseigner, 11 Prof, 1N Matière
 ```
 
-This is a plantuml diagram
-
-```plantuml
-@startuml
-
-
-autonumber
-box "UnTrustedDomain" #Red
-	database UnTrustedKeyStore as UKS
-	control UnTrustedKeyManager as UKM
-    boundary KeyLoader as KL
-end box
-
-box "TrustedDomain" #Green
-	database PersistentStorage as KS
-    control KeyManager as KM
-
-end box
-
-
-group In the Beginning...
-    
-    group RootKBPK    
-        note over KM: A Unique random key is born
-        KS --> KS: Root KBPK exists
-    end
-   
-    group Storage in UnTrustedDomain 
-        KM --> KM: Create Class N KPBK
-        KS --> KM: RootKBPK 
-        note over KM: Shorthand for create a KeyBlock with ClassKBPK N as key payload, and RootKBPK as KBPK
-        UKM --> UKS: KeyBlock[ClassKBPK N]RootKBPK        
-        note over UKS: Process is repeated for ClassKBPK 1,2,3...N 
-    end
-end 
-
-@enduml
+Here we have a simple Schemdraw schematic.
+```schemdraw
+elm.Resistor(d='right', label='1$\Omega$')
+elm.Capacitor(d='down', label='10$\mu$F')
+elm.Line(d='left')
+elm.SourceSin(d='up', label='10V')
 ```
 
-```plantuml
-@startuml
-actor actors
-agent agents
-artifact artifacts
-boundary boundarys
-card cards
-cloud clouds
-component component
-control control
-database database
-entity entity
-file file
-folder folder
-frame frame
-interface  interface
-node node
-package package
-queue queue
-stack stack
-rectangle rectangle
-storage storage
-usecase usecase
-@enduml
+This is a complexe schematic
+```schemdraw
+Q1 = elm.BjtNpn(label='Q1', lftlabel='+IN')
+Q3 = elm.BjtPnp('l', xy=Q1.emitter, anchor='emitter', lftlabel='Q3', flip=True)
+elm.Line('d', xy=Q3.collector)
+elm.Dot
+push
+elm.Line('r', l=d.unit/4)
+Q7 = elm.BjtNpn(anchor='base', label='Q7')
+pop
+elm.Line('d', l=d.unit*1.25)
+Q5 = elm.BjtNpn('l', anchor='collector', flip=True, lftlabel='Q5')
+elm.Line('l', xy=Q5.emitter, l=d.unit/2, lftlabel='OFST\nNULL', move_cur=False)
+elm.Resistor('d', xy=Q5.emitter, label='R1\n1K')
+elm.Line('r', l=d.unit*.75)
+elm.Dot
+R3 = elm.Resistor('u', label='R3\n50K')
+elm.Line(toy=Q5.base)
+elm.Dot
+push
+elm.Line('l', to=Q5.base)
+elm.Line('d', xy=Q7.emitter, toy=Q5.base)
+elm.DOT
+pop
+elm.Line('right', l=d.unit/4)
+Q6 = elm.BjtNpn(anchor='base', label='Q6')
+elm.Line(xy=Q6.emitter, l=d.unit/3, rgtlabel='\nOFST\nNULL', move_cur=False)
+elm.Resistor('d', xy=Q6.emitter, label='R2\n1K')
+elm.Dot
+
+elm.Line('u', xy=Q6.collector, toy=Q3.collector)
+Q4 = elm.BjtPnp('r', anchor='collector', label='Q4')
+elm.Line('l', xy=Q4.base, tox=Q3.base)
+elm.Line('u', xy=Q4.emitter, toy=Q1.emitter)
+Q2 = elm.BjtNpn('l', anchor='emitter', flip=True, lftlabel='Q2', rgtlabel='$-$IN')
+elm.Line('u', xy=Q2.collector, l=d.unit/3)
+elm.Dot
+Q8 = elm.BjtPnp('l', lftlabel='Q8', anchor='base', flip=True)
+elm.Line('d', xy=Q8.collector, toy=Q2.collector)
+elm.Dot
+elm.Line('l', xy=Q2.collector, tox=Q1.collector)
+elm.Line('u', xy=Q8.emitter, l=d.unit/4)
+top = elm.Line('l', tox=Q7.collector)
+elm.Line('d', toy=Q7.collector)
+elm.Line('r', xy=top.start, l=d.unit*2)
+elm.Line('d', l=d.unit/4)
+Q9 = elm.BjtPnp('r', anchor='emitter', label='Q9', lblofst=-.1)
+elm.Line('l', xy=Q9.base, tox=Q8.base)
+elm.Dot(xy=Q4.base)
+elm.Line('d', xy=Q4.base, l=d.unit/2)
+elm.Line('r', tox=Q9.collector)
+elm.Dot
+elm.Line('d', xy=Q9.collector, toy=Q6.collector)
+Q10 = elm.BjtNpn('l', anchor='collector', flip=True, lftlabel='Q10')
+elm.Resistor('d', xy=Q10.emitter, toy=R3.start, label='R4\n5K')
+elm.Dot
+Q11 = elm.BjtNpn('r', xy=Q10.base, anchor='base', label='Q11')
+elm.Dot(xy=Q11.base)
+elm.Line('u', l=d.unit/2)
+elm.Line('r', tox=Q11.collector)
+elm.Dot
+elm.Line('d', xy=Q11.emitter, toy=R3.start)
+elm.Dot
+elm.Line('u', xy=Q11.collector, l=d.unit*2)
+elm.Resistor(toy=Q9.collector, botlabel='R5\n39K')
+Q12 = elm.BjtPnp('l', anchor='collector', flip=True, lftlabel='Q12', lblofst=-.1)
+elm.Line('u', xy=Q12.emitter, l=d.unit/4)
+elm.Dot
+elm.Line('l', tox=Q9.emitter)
+elm.Dot
+elm.Line('r', xy=Q12.base, l=d.unit/4)
+elm.Dot
+push
+elm.Line('d', toy=Q12.collector)
+elm.Line('l', tox=Q12.collector)
+elm.Dot
+push
+elm.Line('r', l=d.unit*1.5)
+Q13 = elm.BjtPnp(anchor='base', label='Q13')
+elm.Line('u', l=d.unit/4)
+elm.Dot
+elm.Line('l', tox=Q12.emitter)
+K = elm.Line('d', xy=Q13.collector, l=d.unit/5)
+elm.Dot
+elm.Line('d')
+Q16 = elm.BjtNpn('r', anchor='collector', label='Q16', lblofst=-.1)
+elm.Line('l', xy=Q16.base, l=d.unit/3)
+elm.Dot
+R7 = elm.Resistor('u', toy=K.end, label='R7\n4.5K')
+elm.Dot
+elm.Line('r', tox=Q13.collector, move_cur=False)
+R8 = elm.Resistor('d', xy=R7.start, label='R8\n7.5K')
+elm.Dot
+elm.Line('r', tox=Q16.emitter)
+J = elm.Dot
+elm.Line('u', toy=Q16.emitter)
+Q15 = elm.BjtNpn('r', anchor='collector', xy=R8.end, label='Q15')
+elm.Line('l', xy=Q15.base, l=d.unit/2)
+elm.Dot
+C1 = elm.Capacitor('u', toy=R7.end, label='C1\n30pF')
+elm.Line('r', tox=Q13.collector)
+elm.Line('l', xy=C1.start, tox=Q6.collector)
+elm.Dot
+elm.Line('d', xy=J.center, l=d.unit/2)
+Q19 = elm.BjtNpn('r', anchor='collector', label='Q19')
+elm.Line('l', xy=Q19.base, tox=Q15.emitter)
+elm.Dot
+elm.Line('u', toy=Q15.emitter, move_cur=False)
+elm.Line('d', xy=Q19.emitter, l=d.unit/4)
+elm.Dot
+elm.Line('left')
+Q22 = elm.BjtNpn('l', anchor='base', flip=True, lftlabel='Q22')
+elm.Line('u', xy=Q22.collector, toy=Q15.base)
+elm.Dot
+elm.Line('d', xy=Q22.emitter, toy=R3.start)
+elm.Dot
+elm.Line('l', tox=R3.start, move_cur=False)
+elm.Line('r', tox=Q15.emitter)
+elm.Dot
+push
+elm.Resistor('u', label='R12\n50K')
+elm.Line(toy=Q19.base)
+pop
+elm.Line(tox=Q19.emitter)
+elm.Dot
+R11 = elm.Resistor('u', label='R11\n50')
+elm.Line(toy=Q19.emitter)
+
+elm.Line('u', xy=Q13.emitter, l=d.unit/4)
+elm.Line('r', l=d.unit*1.5)
+elm.Dot
+elm.Line(l=d.unit/4, rgtlabel='V+', move_cur=False)
+elm.Line('d', l=d.unit*.75)
+Q14 = elm.BjtNpn('r', anchr='collector', label='Q14')
+elm.Line('l', xy=Q14.base, l=d.unit/2)
+push
+elm.Dot
+elm.Line('d', l=d.unit/2)
+Q17 = elm.BjtNpn('l', anchor='collector', flip=True, lftlabel='Q17', lblofst=-.1)
+elm.Line('r', xy=Q17.base, tox=Q14.emitter)
+elm.Dot
+J = elm.Line('u', toy=Q14.emitter)
+push
+elm.Line(tox=Q13.collector)
+elm.Dot
+elm.Resistor('d', xy=J.start, label='R9\n25')
+elm.Dot
+push
+elm.Line('l', tox=Q17.emitter)
+elm.Line('u', toy=Q17.emitter)
+pop
+elm.Line('d', l=d.unit/4)
+elm.Dot
+elm.Line('r', l=d.unit/4, rgtlabel='OUT', move_cur=False)
+elm.Resistor('d', label='R10\n50')
+Q20 = elm.BjtPnp(d='r', anchor='emitter', label='Q20')
+elm.Line('l', xy=Q20.base, l=d.unit/2)
+elm.Line('u', toy=Q15.collector)
+elm.Line('l', tox=Q15.collector)
+elm.Dot
+elm.Line('d', xy=Q20.collector, toy=R3.start)
+elm.Dot
+elm.Line('r', l=d.unit/4, rgtlabel='V-', move_cur=False)
+elm.Line('l', tox=R11.start)
 ```
-
-This is the end of plantuml diagram
-
-```plantuml
-@startuml
-left to right direction
-actor "Food Critic" as fc
-package Restaurant {
-  usecase "Eat Food" as UC1
-  usecase "Pay for Food" as UC2
-  usecase "Drink" as UC3
-}
-fc --> UC1
-fc --> UC2
-fc --> UC3
-@enduml
-```
-
-This is a NwDiag.
-MarkSpecs will complete the description to add the "nwdiag{" at the beginning and  "}" at the end
-
-
-```nwdiag
-network Sample_front {
-    address = "192.168.10.0/24";
-
-    // define group
-    group web {
-      web01 [address = ".1"];
-      web02 [address = ".2"];
-    }
-  }
-  network Sample_back {
-    address = "192.168.20.0/24";
-    web01 [address = ".1"];
-    web02 [address = ".2"];
-    db01 [address = ".101"];
-    db02 [address = ".102"];
-
-    // define network using defined nodes
-    group db {
-      db01;
-      db02;
-    }
-  }
-```
-
-
-```plantuml
-@startuml
-
-User -> (Start)
-User --> (Use the application) : A small label
-
-:Main Admin: ---> (Use the application) : This is\nyet another\nlabel
-
-@enduml
-```
-
-```packetdiag
-  colwidth = 32
-  node_height = 72
-
-  0-15: Source Port
-  16-31: Destination Port
-  32-63: Sequence Number
-  64-95: Acknowledgment Number
-  96-99: Data Offset
-  100-105: Reserved
-  106: URG [rotate = 270]
-  107: ACK [rotate = 270]
-  108: PSH [rotate = 270]
-  109: RST [rotate = 270]
-  110: SYN [rotate = 270]
-  111: FIN [rotate = 270]
-  112-127: Window
-  128-143: Checksum
-  144-159: Urgent Pointer
-  160-191: (Options and Padding)
-  192-223: data [colheight = 3]
-```
-
-```plantuml
-@startuml
-
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-  Object[] elementData
-  size()
-}
-
-enum TimeUnit {
-  DAYS
-  HOURS
-  MINUTES
-}
-
-annotation SuppressWarnings
-
-@enduml
-```
-
-```plantuml
-@startuml
-clock clk with period 1
-binary "Enable" as EN
-
-@0
-EN is low
-
-@5
-EN is high
-
-@10
-EN is low
-@enduml
-```
-
-```plantuml
-@startuml
-clock clk with period 1
-binary "enable" as EN
-concise "dataBus" as db
-
-@0 as :start
-@5 as :en_high 
-@10 as :en_low
-
-
-@:start
-EN is low
-db is "0x0000"
-
-@:en_high
-EN is high
-
-@:en_low
-EN is low
-
-@:en_high-2
-db is "0xf23a"
-
-@:en_high+6
-db is "0x0000"
-@enduml
-```
-
-This is a rack diag schematic.
-```rackdiag
-// define height of rack
-  16U;
-
-  // define rack items
-  1: UPS [2U];
-  3: DB Server
-  4: Web Server
-  5: Web Server
-  6: Web Server
-  7: Load Balancer
-  8: L3 Switch
-```
-
-```plantuml
-@startuml
-scale 5 as 150 pixels
-
-clock clk with period 1
-binary "enable" as en
-binary "R/W" as rw
-binary "data Valid" as dv
-concise "dataBus" as db
-concise "address bus" as addr
-
-@6 as :write_beg
-@10 as :write_end
-
-@15 as :read_beg
-@19 as :read_end
-
-
-@0
-en is low
-db is "0x0"
-addr is "0x03f"
-rw is low
-dv is 0
-
-@:write_beg-3
- en is high
-@:write_beg-2
- db is "0xDEADBEEF"
-@:write_beg-1
-dv is 1
-@:write_beg
-rw is high
-
-
-@:write_end
-rw is low
-dv is low
-@:write_end+1
-rw is low
-db is "0x0"
-addr is "0x23"
-
-@12
-dv is high
-@13 
-db is "0xFFFF"
-
-@20
-en is low
-dv is low
-@21 
-db is "0x0"
-
-highlight :write_beg to :write_end #Gold:Write
-highlight :read_beg to :read_end #lightBlue:Read
-
-db@:write_beg-1 <-> @:write_end : setup time
-db@:write_beg-1 -> addr@:write_end+1 : hold
-@enduml
-```
-
-
-
-```plantuml
-@startsalt
-{+
-{* File | Edit | Source | Refactor }
-{/ General | Fullscreen | Behavior | Saving }
-{
-{ Open image in: | ^Smart Mode^ }
-[X] Smooth images when zoomed
-[X] Confirm image deletion
-[ ] Show hidden images
-}
-[Close]
-}
-@endsalt
-

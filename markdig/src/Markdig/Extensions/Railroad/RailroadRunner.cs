@@ -62,9 +62,9 @@ namespace Markdig.Extensions.Railroad
         private void RunRailroadCmd(string pythonFile)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            start.WorkingDirectory = Path.GetDirectoryName(railroadEnvironment.RailroadPath);
+            //start.WorkingDirectory = Path.GetDirectoryName(pythonFile);
             start.FileName = railroadEnvironment.PythonPath;
-            start.Arguments = Path.GetFileName(pythonFile);
+            start.Arguments = pythonFile;
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
 

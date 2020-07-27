@@ -54,13 +54,19 @@
     <None Update="App.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="PythonHeaders\schemdraw_pythonheader.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="tests\01-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="tests\02-test_mocodo.md">
+    <None Update="tests\02-test_plantuml.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="tests\03-test_mocodo.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tests\04-test_mocodo.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="vendors\nwdiag\bin\blockdiag.exe">
@@ -85,11 +91,9 @@
   </ItemGroup>
 
   <ItemGroup>
-        <MocodoFiles Include="$(SolutionDir)/vendors/mocodo/**/*.*" 
-        Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md"/>
+        <MocodoFiles Include="$(SolutionDir)/vendors/mocodo/**/*.*" Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md" />
         
-        <RailRoadFiles Include="$(SolutionDir)/vendors/railroad/**/*.*" 
-        Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md;**/*.gitattributes;**/*.js*;**/setup.py;**/test.py"/>
+        <RailRoadFiles Include="$(SolutionDir)/vendors/railroad/**/*.*" Exclude="**/doc/**/*.*;**/logos/**/*.*;**/.git/**/*.*;**/.vs/**/*.*;**/magic/**/*.*;**/web/**/*.*;**/tests;**/.gitignore;**/sandbox*.*;**/*.html;**/*.md;**/*.gitattributes;**/*.js*;**/setup.py;**/test.py" />
     </ItemGroup>
 
       <!--Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -98,21 +102,12 @@
   </Target-->
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy
-            SourceFiles="@(MocodoFiles)"
-            DestinationFiles="@(MocodoFiles->'$(TargetDir)\vendors\mocodo\%(RecursiveDir)%(Filename)%(Extension)')"
-        />
-        <Copy
-            SourceFiles="@(RailRoadFiles)"
-            DestinationFiles="@(RailRoadFiles->'$(TargetDir)\vendors\railroad\%(RecursiveDir)%(Filename)%(Extension)')"
-        />
+        <Copy SourceFiles="@(MocodoFiles)" DestinationFiles="@(MocodoFiles->'$(TargetDir)\vendors\mocodo\%(RecursiveDir)%(Filename)%(Extension)')" />
+        <Copy SourceFiles="@(RailRoadFiles)" DestinationFiles="@(RailRoadFiles->'$(TargetDir)\vendors\railroad\%(RecursiveDir)%(Filename)%(Extension)')" />
     </Target>
   
     <Target Name="ZipSchemdraw" AfterTargets="PostBuildEvent">
-        <ZipDirectory
-            SourceDirectory="$(SolutionDir)/vendors/schemdraw/schemdraw"
-            DestinationFile="$(TargetDir)/vendors/schemdraw.zip" 
-            Overwrite="true" />
+        <ZipDirectory SourceDirectory="$(SolutionDir)/vendors/schemdraw/" DestinationFile="$(TargetDir)/vendors/schemdraw.zip" Overwrite="true" />
     </Target>
 
 </Project>

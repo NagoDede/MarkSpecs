@@ -6,17 +6,17 @@ using Markdig.Helpers;
 using Markdig.Parsers;
 using Markdig.Syntax;
 
-namespace Markdig.Extensions.Railroad
+namespace Markdig.Extensions.Schemdraw
 {
     /// <summary>
     /// A math block.
     /// </summary>
     /// <seealso cref="FencedCodeBlock" />
-    public class RailroadBlock : SpecificFencedCodeBlock
+    public class SchemdrawBlock : SpecificFencedCodeBlock
     {
-        public RailroadBlock(BlockParser parser) : base(parser)
+        public SchemdrawBlock(BlockParser parser) : base(parser)
         {
-            this.SpecificSelector = "railroad";
+            this.SpecificSelector = "schemdraw";
         }
 
         public StringSlice Parameters { get; set; }

@@ -38,6 +38,7 @@ using Markdig.Extensions.Nwdiag;
 using Markdig.Extensions.Packetdiag;
 using Markdig.Extensions.Rackdiag;
 using Markdig.Extensions.Railroad;
+using Markdig.Extensions.Schemdraw;
 using Markdig.Parsers;
 using Markdig.Parsers.Inlines;
 using Markdig.Extensions.Globalization;
@@ -96,6 +97,7 @@ namespace Markdig
                 .UseMathematics()
                 .UseMocodo()
                 .UseRailRoad()
+                .UseSchemdraw()
                 .UsePlantUml()
                 .UseNwdiag()
                 .UsePacketdiag()
@@ -242,7 +244,7 @@ namespace Markdig
         }
 
         /// <summary>
-        /// Uses the RailRoad diagram <see cref="http://www.mocodo.net/"/>
+        /// Uses the RailRoad diagram/>
         /// </summary>
         /// <param name="pipeline">The pipeline.</param>
         /// <returns>The modified pipeline</returns>
@@ -251,6 +253,20 @@ namespace Markdig
             if (!pipeline.Extensions.Contains<RailroadExtension>())
             {
                 pipeline.Extensions.Add(new RailroadExtension());
+            }
+            return pipeline;
+        }
+
+        /// <summary>
+        /// Uses the RailRoad diagram <see cref="https://schemdraw.readthedocs.io/en/latest/usage/start.html"/>
+        /// </summary>
+        /// <param name="pipeline">The pipeline.</param>
+        /// <returns>The modified pipeline</returns>
+        public static MarkdownPipelineBuilder UseSchemdraw(this MarkdownPipelineBuilder pipeline)
+        {
+            if (!pipeline.Extensions.Contains<SchemdrawExtension>())
+            {
+                pipeline.Extensions.Add(new SchemdrawExtension());
             }
             return pipeline;
         }
@@ -699,6 +715,9 @@ namespace Markdig
                         break;
                     case "railroad":
                         pipeline.UseRailRoad();
+                        break;
+                    case "schemdraw":
+                        pipeline.UseSchemdraw();
                         break;
                     case "plantuml":
                         pipeline.UsePlantUml();

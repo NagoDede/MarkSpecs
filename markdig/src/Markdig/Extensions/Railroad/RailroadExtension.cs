@@ -16,7 +16,7 @@ namespace Markdig.Extensions.Railroad
     {
         private RailroadEnvironment RailroadEnvironment;
 
-        string IExtensionEnvironment.ExtensionName => "Railroad";
+        string IExtensionEnvironment.ExtensionName => "railroad";
 
         public RailroadExtension()
         {

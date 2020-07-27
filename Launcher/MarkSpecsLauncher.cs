@@ -1,11 +1,18 @@
 ﻿using Markdig;
 using Markdig.Extensions;
 using Markdig.Extensions.PlantUml;
+using Markdig.Extensions.Mocodo;
+using Markdig.Extensions.Railroad;
+using Markdig.Extensions.Schemdraw;
+using Markdig.Extensions.Nwdiag;
+using Markdig.Extensions.Rackdiag;
+using Markdig.Extensions.Packetdiag;
 using NagoDede.AdvCmdParser;
 using System;
 using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace MarkSpecs.Launcher
 {
@@ -52,8 +59,10 @@ namespace MarkSpecs.Launcher
 
             Markdig.Extensions.EnvironmentList markdigEnvironmentList = new Markdig.Extensions.EnvironmentList();
             markdigEnvironmentList.Add(PlantUmlEnvironmentFromConfig());
-            markdigEnvironmentList.Add(new Markdig.Extensions.Mocodo.MocodoEnvironment());
+            markdigEnvironmentList.Add(MocodoEnvironmentFromConfig());
             markdigEnvironmentList.Add(new Markdig.Extensions.Nwdiag.NwdiagEnvironment());
+            markdigEnvironmentList.Add(RailroadEnvironmentFromConfig());
+            markdigEnvironmentList.Add(SchemDrawEnvironmentFromConfig());
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -92,6 +101,49 @@ namespace MarkSpecs.Launcher
 
             return new PlantUmlEnvironment(host, port, instanceNb, user, pwd);
         }
+
+        /// <summary>
+        /// Configure the Mocodo environment by using the data of the Application config.
+        /// </summary>
+        /// <returns></returns>
+        private static MocodoEnvironment MocodoEnvironmentFromConfig()
+        {
+            //retrieve the PlantUmlSettings
+            var path = ConfigurationManager.AppSettings["Mocodo.Path"];
+
+            return new MocodoEnvironment(path);
+        }
+
+        /// <summary>
+        /// Configure the RailRoad environment by using the data of the Application config.
+        /// </summary>
+        /// <returns></returns>
+        private static RailroadEnvironment RailroadEnvironmentFromConfig()
+        {
+            //retrieve the PlantUmlSettings
+            var path = ConfigurationManager.AppSettings["Railroad.Path"];
+
+            return new RailroadEnvironment(path);
+        }
+
+        /// <summary>
+        /// Configure the Schemdraw environment by using the data of the Application config.
+        /// </summary>
+        /// <returns></returns>
+        private static SchemdrawEnvironment SchemDrawEnvironmentFromConfig()
+        {
+            //retrieve the PlantUmlSettings
+            var path = ConfigurationManager.AppSettings["Schemdraw.Path"];
+            if (!File.Exists(path))
+                Console.WriteLine(path + " is not a valid path to Schemdraw python library.");
+
+            var pythonHeader = ConfigurationManager.AppSettings["Schemdraw.PythonHeader"];
+            if (!File.Exists(pythonHeader))
+                Console.WriteLine(pythonHeader + " is not a valid path to the header python header text file.");
+
+            return new SchemdrawEnvironment(path, pythonHeader);
+        }
+
 
         /// <summary>
         /// Generate a single HTML file from the MD files set in the indicated directory.
