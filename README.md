@@ -159,16 +159,19 @@ d.writeSvg(sys.stdout.write)
 ```
 ## Schemdraw
 ### Aim
-Allows you to draw electronic schematics or logical schematics.  
+SchemDraw is a python package for producing high-quality electrical circuit schematic diagrams.
 ### Installation and Configuration
 Requires Python >3.7, numpy and matplotlib
 ```
 pip install numpy
 pip install matplotlib
 ```
-Sources are available on bitbucket https://bitbucket.org/cdelker/schemdraw/downloads/  
-For convenience, I download the project, extract the low level schemdraw directory, and zip the content in a new file. Thanks the zip, it becomes easy to import the Python project by using _zipimport_.    
-The content of the zipfile follows the schem:
+Sources are available on bitbucket https://bitbucket.org/cdelker/schemdraw/downloads/ but for the project, I add the sources as subtree 
+```git
+git subtree add --prefix=vendors/schemdraw/ git@bitbucket.org:cdelker/schemdraw.git master
+```
+When building the project, I zip the subfolder _schemdraw_ and copy it to the vendors output directory. Thanks the zip, it becomes easy to import the Python project by using _zipimport_.  By this way, it's very easy to keep the Markspecs and Schemdraw up to date.  
+For information, the content of the zipfile follows the schem:
 ''' 
 schemdraw.zip
   |
@@ -191,13 +194,13 @@ The current definition of the header file is:
 #Start of header
 import sys
 import zipimport
-importer = zipimport.zipimporter("{path_of_schemdraw.zip}") 
+importer = zipimport.zipimporter("${schemdraw_path_zip}") 
 mod=importer.load_module('schemdraw')
 import schemdraw
 import schemdraw.elements as elm
 #End of header
 ```
-The _{path_of_schemdraw.zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _{path_of_schemdraw.zip}_ keyword.
+The _${schemdraw_path_zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _{path_of_schemdraw.zip}_ keyword.
 
 ### Syntax
 MarkSpecs simplifies the syntax in regard of the original Schemdraw qyntax. There is no need to refer to the Drawing.Add() to build a schematic.  
