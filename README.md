@@ -196,11 +196,9 @@ import sys
 import zipimport
 importer = zipimport.zipimporter("${schemdraw_path_zip}") 
 mod=importer.load_module('schemdraw')
-import schemdraw
-import schemdraw.elements as elm
 #End of header
 ```
-The _${schemdraw_path_zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _{path_of_schemdraw.zip}_ keyword.
+The _${schemdraw_path_zip}_ will be replaced by MarkSpecs by the definition provided in the Application configuration file. If you want to change the header file but also want to keep the way to insert the path to the schemdraw zip file, you have to use _${schemdraw_path_zip}_ keyword.
 
 ### Syntax
 MarkSpecs simplifies the syntax in regard of the original Schemdraw qyntax. There is no need to refer to the Drawing.Add() to build a schematic.  
@@ -237,9 +235,9 @@ import sys
 import zipimport
 importer = zipimport.zipimporter("c:/Markspecs/vendors/schemdraw.zip") 
 mod=importer.load_module('schemdraw')
+#End of header
 import schemdraw
 import schemdraw.elements as elm
-#End of header
 d = schemdraw.Drawing()
 d.add(elm.Resistor(d='right', label='1$\Omega$'))
 d.add(elm.Capacitor(d='down', label='10$\mu$F'))
