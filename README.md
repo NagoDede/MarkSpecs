@@ -172,7 +172,7 @@ git subtree add --prefix=vendors/schemdraw/ git@bitbucket.org:cdelker/schemdraw.
 ```
 When building the project, I zip the subfolder _schemdraw_ and copy it to the vendors output directory. Thanks the zip, it becomes easy to import the Python project by using _zipimport_.  By this way, it's very easy to keep the Markspecs and Schemdraw up to date.  
 For information, the content of the zipfile follows the schem:
-''' 
+<pre>
 schemdraw.zip
   |
   +-schemdraw (directory)
@@ -184,7 +184,7 @@ schemdraw.zip
     + dsp (directory)
     + elements (directory)
     + (other directoris)
-''' 
+</pre>
 This is an intersting approach to provide a way to update easily Schemdraw without impact on MarkSpecs. But you have to remember that Schemdraw request Matplotlib and Numpy.   
 Unfortunately, it also means you have to install the Matplotlib and Numpy libraries on your Python environment to run Schemdraw through Markspecs.  
 I am not a Python expert, so instead of a fight with Python and its libraries (or do other solutions, like making an exe...), I provide the sources of the tools and the user is free to change the way to import the libraries by an update of the _schemdraw-header.txt_ file.  
