@@ -8,44 +8,11 @@ using Markdig.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Markdig.Extensions.Schemdraw
 {
-    /// <summary>
-    /// Manage the attributes for the Schemdraw
-    /// </summary>
-
-    internal class SchemdrawAttributes : Dictionary<string, string>
-    {
-        public SchemdrawAttributes(IDictionary<string, string> dic) : base(dic)
-        { }
-
-        public SchemdrawAttributes() : base()
-        { }
-
-        public override string ToString()
-        {
-            if (this.Count == 0)
-                return "";
-
-            StringBuilder sb = new StringBuilder();
-            var idLast = this.Count - 1;
-            for (int i = 0; i < this.Count; i++)
-            {
-                if (i < idLast)
-                    sb.Append($"{this.Keys.ElementAt(i)}={this.Values.ElementAt(i)}, ");
-                else
-                    sb.Append($"{this.Keys.ElementAt(idLast)}={this.Values.ElementAt(idLast)}");
-            }
-
-            return sb.ToString();
-        }
-    }
-
     /// <summary>
     /// Launch Schemdraw through a python application.
     /// </summary>
@@ -55,7 +22,7 @@ namespace Markdig.Extensions.Schemdraw
         public HtmlAttributes Args { get; set; }
 
         private SchemdrawEnvironment schemdrawEnvironment;
-        private static Dictionary<string, dynamic> allowedAttributes; //contain the list of the defined attributes
+
         private static int internalCounter;
 
         //setup chain of responsibility
@@ -75,8 +42,6 @@ namespace Markdig.Extensions.Schemdraw
         public SchemdrawRunner(SchemdrawEnvironment environment)
         {
             this.schemdrawEnvironment = environment;
-            if (allowedAttributes is null)
-                LoadAllowedAttributes();
 
             if (!isHandlersInit)
             {
@@ -100,8 +65,12 @@ namespace Markdig.Extensions.Schemdraw
             var tempSchemdrawPythonFile = Path.Combine(Path.GetTempPath(), $"schemdraw_gen_{++internalCounter}.py");
             Console.WriteLine("Execute SchemDraw Python script: " + tempSchemdrawPythonFile);
 
+            //Load the Schemdraw attributes
+            SchemdrawAttributes schemdrawAttrs = new SchemdrawAttributes();
+            schemdrawAttrs.LoadAttributes(dataIn.GetAttributes().Properties);
+
             //Generate the ¨temporary Python files to generate the schematic
-            var tempSvgFile = this.WritePythonScriptInFile(tempSchemdrawPythonFile, dataIn);
+            var tempSvgFile = this.WritePythonScriptInFile(tempSchemdrawPythonFile, schemdrawAttrs, dataIn);
 
             //If the generation is not a success
             if (!tempSvgFile.Item1)
@@ -137,70 +106,6 @@ namespace Markdig.Extensions.Schemdraw
             //generation success. Delete the temporary files and send back the SVG content.
             //DeleteFiles(new List<String> { tempSchemdrawPythonFile, tempSvgFile.Item2 });
             return outData;
-        }
-
-        /// <summary>
-        /// Retrieve the Attributes from the definition set in the markdown file.
-        /// Keep only the applicable attributes. Attributes not defined in the allowedAttributes list will be ignore.
-        /// </summary>
-        /// <param name="attributes"></param>
-        /// <param name="inputFile"></param>
-        /// <returns></returns>
-        private SchemdrawAttributes GetIdentifiedAttrs(in List<KeyValuePair<string, string>> attributes)
-        {
-            if ((attributes is null) || (attributes.Count == 0))
-            {
-                SchemdrawAttributes attr = new SchemdrawAttributes();
-                return attr;
-            }
-
-            SchemdrawAttributes identifiedAttributes = new SchemdrawAttributes();
-            foreach (var keyValue in attributes)
-            {
-                if (allowedAttributes.ContainsKey(keyValue.Key))
-                {
-                    var expectedValue = allowedAttributes[keyValue.Key];
-
-                    if (expectedValue is string)
-                    {
-                        string expectedType = expectedValue as string;
-                        if (expectedType.Equals("string"))
-                        {//if it's a string, accept as it is
-                            identifiedAttributes.Add(keyValue.Key, keyValue.Value);
-                        }
-                        else if (expectedType.Equals("integer"))
-                        {
-                            //check if the value is well an integer
-                            if (int.TryParse(keyValue.Value, out _))
-                                identifiedAttributes.Add(keyValue.Key, keyValue.Value);
-                            //else ignore the command
-                        }
-                        else if (expectedType.Equals("float"))
-                        {
-                            //check if the value is well an integer
-                            if (float.TryParse(keyValue.Value.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
-                                identifiedAttributes.Add(keyValue.Key, keyValue.Value);
-                            //else ignore the command
-                        }
-                    }
-                    //else ignore the command
-                }
-            }
-            return identifiedAttributes;
-        }
-
-        private void LoadAllowedAttributes()
-        {
-            allowedAttributes = new Dictionary<string, dynamic>();
-            allowedAttributes.Add("unit", "float"); // Full length of a 2 - terminal element.Inner zig-zag portion of a resistor is 1.0 units.
-            allowedAttributes.Add("inches_per_unit", "float"); // Inches per drawing unit for setting drawing scale
-            allowedAttributes.Add("lblofst", "float"); //Offset between element and its label
-            allowedAttributes.Add("fontsize", "float"); //Default font size for text labels
-            allowedAttributes.Add("font", "string"); //Default font family for text labels
-            allowedAttributes.Add("color", "string"); //Default color name or RGB (0-1) tuple
-            allowedAttributes.Add("lw", "float"); //Default line width for elements
-            allowedAttributes.Add("ls", "string"); //Default line style ‘-‘, ‘:’, ‘–’, etc.
-            allowedAttributes.Add("fill", "string"); //Deault fill color for closed elements
         }
 
         private void DeleteFiles(ICollection<string> files)
@@ -248,12 +153,9 @@ namespace Markdig.Extensions.Schemdraw
         /// </summary>
         /// <param name="path"></param>
         /// <param name="leafBlock"></param>
-        private (bool, string) WritePythonScriptInFile(string path, LeafBlock leafBlock)
+        private (bool, string) WritePythonScriptInFile(string path, SchemdrawAttributes attr, LeafBlock leafBlock)
         {
 #nullable enable
-            //retrieve the attributes
-            var attr = GetIdentifiedAttrs(leafBlock.GetAttributes().Properties);
-
             if (leafBlock == null) ThrowHelper.ArgumentNullException_leafBlock();
             //retrieve the python header content
             var pythonHeader = File.ReadAllText(this.schemdrawEnvironment.HeaderPath);
@@ -626,9 +528,10 @@ namespace Markdig.Extensions.Schemdraw
         }
 
 #nullable enable
-        static int openBrackets = 0;
-        static int closeBrackets = 0;
-        static bool isOpenBracket = false;
+        private static int openBrackets = 0;
+        private static int closeBrackets = 0;
+        private static bool isOpenBracket = false;
+
         public override string? HandleRequest(SchemdrawCommandLine commandLine, string drawingName, StreamWriter tw)
         {
             var lineStr = commandLine.CleanLine;
@@ -638,9 +541,8 @@ namespace Markdig.Extensions.Schemdraw
             var equalPos = lineStr.IndexOf('=');
             var kwPos = GetPosSchemdrawKeyWord(lineStr);
 
-
             //count the bracket
-            
+
             for (int i = 0; i < lineStr.Length; i++)
             {
                 if (lineStr[i] == '[')
@@ -649,13 +551,13 @@ namespace Markdig.Extensions.Schemdraw
                     continue;
                 }
                 if (lineStr[i] == ']')
-                    closeBrackets++; 
+                    closeBrackets++;
             }
 
             //if we are in an open [ ], we just report the full line
             if (openBrackets != closeBrackets)
             {
-               isOpenBracket = true;
+                isOpenBracket = true;
                 tw.WriteLine(fullLine);
             }
             else if (isOpenBracket && (openBrackets == closeBrackets))
@@ -663,7 +565,6 @@ namespace Markdig.Extensions.Schemdraw
                 isOpenBracket = false;
                 tw.WriteLine(fullLine);
             }
-
             else if ((equalPos > 0) && (equalPos < kwPos))
             {//the line is a type A = ...keyword...
                 var itemName = lineStr.Substring(0, equalPos).Trim();
