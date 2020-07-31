@@ -7,6 +7,7 @@ using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -39,6 +40,9 @@ namespace Markdig.Extensions.Schemdraw
 
         private static bool isHandlersInit = false;
 
+        private static SchemdrawAttributes schemdrawAttrs = new SchemdrawAttributes();
+        private static GlobalAttributes globalAttrs = new GlobalAttributes();
+
         public SchemdrawRunner(SchemdrawEnvironment environment)
         {
             this.schemdrawEnvironment = environment;
@@ -57,6 +61,9 @@ namespace Markdig.Extensions.Schemdraw
                 h7.SetSuccessor(h8);
                 isHandlersInit = true;
             }
+
+            schemdrawAttrs.ResetToDefault();
+            globalAttrs.ResetToDefault();
         }
 
         public string Run(LeafBlock dataIn)
@@ -66,54 +73,60 @@ namespace Markdig.Extensions.Schemdraw
             Console.WriteLine("Execute SchemDraw Python script: " + tempSchemdrawPythonFile);
 
             //Load the Schemdraw attributes
-            SchemdrawAttributes schemdrawAttrs = new SchemdrawAttributes();
             schemdrawAttrs.LoadAttributes(dataIn.GetAttributes().Properties);
+            globalAttrs.LoadAttributes(dataIn.GetAttributes().Properties);
 
             //Generate the ¨temporary Python files to generate the schematic
-            var tempSvgFile = this.WritePythonScriptInFile(tempSchemdrawPythonFile, schemdrawAttrs, dataIn);
+            (bool, string) tempSchematicFile;
+            if (!string.IsNullOrEmpty(globalAttrs.FormatType) || globalAttrs.PrintPythonCode)
+                tempSchematicFile = this.WritePythonScriptInFile(tempSchemdrawPythonFile, globalAttrs.FormatType, schemdrawAttrs, dataIn);
+            else
+                tempSchematicFile = (true, "");
 
             //If the generation is not a success
-            if (!tempSvgFile.Item1)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("<p> No SVG file generated.</p>");
-                sb.AppendLine("<p>" + tempSvgFile.Item2 + "</p>");
+            if (!tempSchematicFile.Item1)
+                return WriteErrorLog(tempSchematicFile.Item2, tempSchemdrawPythonFile, dataIn);
 
-                DeleteFiles(new List<String> { tempSchemdrawPythonFile, tempSvgFile.Item2 });
+            var feedBack = GenerateSchematic(tempSchemdrawPythonFile, tempSchematicFile.Item2, dataIn);
 
-                return sb.ToString();
-            }
+            if (!string.IsNullOrEmpty(feedBack))
+                return feedBack;
 
-            //Generate the schematic
-            var feedBack = RunSchemdrawCmd(tempSchemdrawPythonFile);
+            var outPutContent = WriteOutput(globalAttrs, tempSchematicFile.Item2, tempSchemdrawPythonFile, dataIn);
 
-            var outData = GetFilesContent(tempSvgFile.Item2);
-            if (outData is null)
-            {//If the content of the file cannot be retrieved, there is an error during the process.
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("<p> No SVG file generated.</p>");
-                sb.AppendLine("<p>" + feedBack + "</p>");
-                if (File.Exists(tempSchemdrawPythonFile))
-                {
-                    sb.AppendLine("<p>");
-                    sb.AppendLine(File.ReadAllText(tempSchemdrawPythonFile));
-                    sb.AppendLine("</p>");
-
-                    //DeleteFiles(new List<String> { tempSchemdrawPythonFile, tempSvgFile.Item2 });
-                }
-                return sb.ToString();
-            }
-            //generation success. Delete the temporary files and send back the SVG content.
-            //DeleteFiles(new List<String> { tempSchemdrawPythonFile, tempSvgFile.Item2 });
-            return outData;
+            DeleteFiles(new List<String> { tempSchemdrawPythonFile, tempSchematicFile.Item2 });
+            return outPutContent;
         }
 
         private void DeleteFiles(ICollection<string> files)
         {
             foreach (var item in files)
             {
-                File.Delete(item);
+                if (!string.IsNullOrEmpty(item))
+                    File.Delete(item);
             }
+        }
+
+        private string PrintBlock(LeafBlock block)
+        {
+            
+
+            string attr = "{";
+            foreach (var kv in block.GetAttributes().Properties)
+            {
+                attr += kv.Key + "=" + kv.Value + " ";
+            }
+            attr = "```schemdraw " +  attr.Trim() + "}";
+
+            StringBuilder sb = new StringBuilder(attr + Environment.NewLine);
+            var cnt = block.Lines.Count;
+            for (int i = 0; i < cnt; i++)
+            {
+                var item = block.Lines.Lines[i];
+                sb.AppendLine(item.ToString());
+            }
+            sb.AppendLine("```");
+            return sb.ToString();
         }
 
         private string? GetFilesContent(string svgFile)
@@ -139,8 +152,8 @@ namespace Markdig.Extensions.Schemdraw
                 {
                     string result = reader.ReadToEnd();
                     //Console.Write(result);
-                    sb.AppendLine(result);
-                    return sb.ToString();
+                    
+                    return result;
                 }
             }
 
@@ -153,7 +166,7 @@ namespace Markdig.Extensions.Schemdraw
         /// </summary>
         /// <param name="path"></param>
         /// <param name="leafBlock"></param>
-        private (bool, string) WritePythonScriptInFile(string path, SchemdrawAttributes attr, LeafBlock leafBlock)
+        private (bool, string) WritePythonScriptInFile(string path, string outputType, SchemdrawAttributes attr, LeafBlock leafBlock)
         {
 #nullable enable
             if (leafBlock == null) ThrowHelper.ArgumentNullException_leafBlock();
@@ -204,7 +217,7 @@ namespace Markdig.Extensions.Schemdraw
                 }
             }
 
-            string tempScriptPath = Path.Combine(Path.GetTempPath(), $"schemdraw_{internalCounter}.svg").Replace(@"\", "/"); //Best way for python to manage path
+            string tempScriptPath = Path.Combine(Path.GetTempPath(), $"schemdraw_{internalCounter}.{outputType}").Replace(@"\", "/"); //Best way for python to manage path
 
             tw.WriteLine($"d.save(\"{tempScriptPath}\")");
 
@@ -214,6 +227,80 @@ namespace Markdig.Extensions.Schemdraw
             return (commandLineStatus == null, commandLineStatus ?? tempScriptPath);
 
 #nullable disable
+        }
+
+        private string GenerateSchematic(string pythonFile, string outFile, LeafBlock dataIn)
+        {
+            string feedBack = "";
+            if (!String.IsNullOrEmpty(globalAttrs.FormatType))
+                //Generate the schematic
+                feedBack = RunSchemdrawCmd(pythonFile);
+            else
+                return "";
+
+            if (!File.Exists(outFile) || !string.IsNullOrEmpty(feedBack))
+            {
+                StringBuilder sb = new StringBuilder(feedBack);
+                return WriteErrorLog(outFile, pythonFile, dataIn, sb);
+            }
+
+            return "";
+        }
+
+        private string WriteOutput(GlobalAttributes attr, string schematicFile, string pythonFile, LeafBlock dataIn)
+        {
+            StringBuilder sbOut = new StringBuilder();
+
+            string overFlowAttr = "";
+            if (attr.ContainsKey("overflow"))
+                overFlowAttr = $"overflow:{attr["overflow"]}; height: {attr["code_height"]}; width:  {attr["code_width"]}";
+
+            if (attr.FormatType.ToLower().Equals("svg"))
+                sbOut.Append(GetFilesContent(schematicFile));
+
+            if (globalAttrs.PrintDefinitionCode)
+            {
+                sbOut.Append("<br><strong>Schemdraw commands: </strong>");
+                sbOut.Append($"<code><pre style=\"{overFlowAttr}\"> ");
+                sbOut.Append(PrintBlock(dataIn).Replace("\r", ""));
+                sbOut.Append("</pre></code>");
+            }
+
+            if (globalAttrs.PrintPythonCode)
+                if (File.Exists(pythonFile))
+                {
+                    sbOut.Append("<br><strong>Generated Python file: </strong>");
+                    sbOut.Append($"<code><pre style=\"{overFlowAttr}\">");
+                    sbOut.Append(File.ReadAllText(pythonFile).Replace("\r", ""));
+                    sbOut.Append("</pre></code>");
+                }
+
+            return sbOut.ToString();
+        }
+
+        private string WriteErrorLog(string schematicFile, string pythonFile, LeafBlock dataIn, StringBuilder sb = null)
+        {
+            if (sb is null)
+                sb= new StringBuilder();
+ 
+
+            sb.AppendLine("<p style=\"color: red;\"><strong> No SVG file generated.</strong></p>");
+            sb.AppendLine("<p style=\"color: red;\">" + schematicFile + " fails </p>");
+
+            sb.Append("<code style=\"color: red;\"><pre>");
+            sb.Append(PrintBlock(dataIn).Replace("\r", ""));
+            sb.Append("</code></pre>");
+
+            if (File.Exists(pythonFile))
+            {
+                sb.Append("<code style=\"color: red;\"><pre>");
+                sb.Append(File.ReadAllText(pythonFile));
+                sb.Append("</code></pre>");
+            }
+
+            DeleteFiles(new List<String> { pythonFile, schematicFile });
+
+            return sb.ToString();
         }
     }
 

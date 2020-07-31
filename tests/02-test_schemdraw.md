@@ -20,37 +20,29 @@ Supported attributes are unit, inches_per_unit, lblofst, fontsize, font, color, 
 ## Schemdraw schematics.
 ### Simple schematic
 This is a very basic schematic. It contains only a resistor, a source and a capacitor.
-The Python code should be (the library references are not set):
-```python
-d.add(elm.Resistor(d='right', label='1$\Omega$'))
-d.add(elm.Capacitor(d='down', label='10$\mu$F'))
-d.add(elm.Line(d='left'))
-d.add(elm.SourceSin(d='up', label='10V'))
-d.draw()
-```
-In Markspecs, the equivalent code is
+The following MarkSpec definition code will generate the schematic, the Schemdraw commands and the content of the Python file used to build the schematic.
 <pre>
-```schemdraw
+```schemdraw {print_definition_code=true format = "svg"}
 elm.Resistor(d='right', label='1$\Omega$')
 elm.Capacitor(d='down', label='10$\mu$F')
 elm.Line(d='left')
 elm.SourceSin(d='up', label='10V')
 ```
 </pre>
-and it will generate the following diagram.
-```schemdraw
+
+```schemdraw {print_definition_code=true print_python_code=true}
 elm.Resistor(d='right', label='1$\Omega$')
 elm.Capacitor(d='down', label='10$\mu$F')
 elm.Line(d='left')
 elm.SourceSin(d='up', label='10V')
 ```
-Note that the definition is more clear thanks the removal of the reference _d.add_.
+Note that the Markspec definition is more clear than the Python definition thanks the removal of the reference _d.add_.
 
 ### 741 Opamp Internal Schematic
 This is a complexe schematic, it is build on the 741 Opamp Internal Schematic.  
 Note the use of the push and pop commands and the allocation and use of some specific elements (like Q1, Q3,...).
 
-```schemdraw {fontsize=12 unit=2.5}
+```schemdraw {fontsize=12 unit=2.5 print_definition_code=true overflow=auto}
 Q1 = elm.BjtNpn(label='Q1', lftlabel='+IN')
 Q3 = elm.BjtPnp('l', xy=Q1.emitter, anchor='emitter', lftlabel='Q3', flip=True)
 elm.Line('d', xy=Q3.collector)
@@ -216,7 +208,7 @@ elm.Line('l', tox=R11.start)
 ```
 ### Loop Current
 The next exemple, shows how to use _loopI_ method (Drawing.loopI()) to create _Loop Current_ on your schematic.
-```schemdraw {unit=5}
+```schemdraw {unit=5 print_definition_code=true}
 V1 = elm.SourceV(label='$20V$')
 R1 = elm.Resistor(d='right', label='400$\Omega$')
 elm.Dot()
@@ -465,7 +457,7 @@ elm.Line('l', tox=BOT.start)
 ```
 This exemple shows that it is possible to define Python class in a Schemdraw block.
 The integration can manage some line breaks in the definition. Line breaks are possible only under array definition outside element definition. If you experiment some troubles with the definition, try to define the tables on a single row.
-```schemdraw {fontsize=11 inches_per_unit=.4}
+```schemdraw {fontsize=11 inches_per_unit=.4 print_definition_code=true print_python_code=true overflow=auto}
 class Atmega328(elm.Ic):
     def __init__(self, *args, **kwargs):
 #Here line breaks are allowed
