@@ -7,7 +7,6 @@ using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -16,6 +15,15 @@ namespace Markdig.Extensions.Schemdraw
 {
     /// <summary>
     /// Launch Schemdraw through a python application.
+    /// The generation of the schematic is a multiple step process.
+    /// 1- Generate a Python file from the commands set in the block.
+    ///     To do so, several handlers are defined. The aim of the handler is to check the
+    ///     the syntax and transform the Schemdraw commands in an appropiate Python command.
+    ///     Handler are static, they will be loaded only one time.
+    /// 2 - Run the Python command.
+    /// 3 - Retrieve the generated files and the associated content.
+    /// 4 - Delete the temporary files.
+    /// 5 - Generate the outputs.
     /// </summary>
 
     public class SchemdrawRunner
@@ -28,7 +36,6 @@ namespace Markdig.Extensions.Schemdraw
 
         //setup chain of responsibility
         private static Handler h0 = new HandlerBrackets();
-
         private static Handler h1 = new HandlerOpenDrawing();
         private static Handler h2 = new HandlerCloseDrawing();
         private static Handler h3 = new HandlerCheckDrawing("d");
@@ -76,14 +83,14 @@ namespace Markdig.Extensions.Schemdraw
             schemdrawAttrs.LoadAttributes(dataIn.GetAttributes().Properties);
             globalAttrs.LoadAttributes(dataIn.GetAttributes().Properties);
 
-            //Generate the ¨temporary Python files to generate the schematic
+            //Generate the temporary Python files to generate the schematic.
             (bool, string) tempSchematicFile;
             if (!string.IsNullOrEmpty(globalAttrs.FormatType) || globalAttrs.PrintPythonCode)
                 tempSchematicFile = this.WritePythonScriptInFile(tempSchemdrawPythonFile, globalAttrs.FormatType, schemdrawAttrs, dataIn);
             else
                 tempSchematicFile = (true, "");
 
-            //If the generation is not a success
+            //If the Python file generation is not a success.
             if (!tempSchematicFile.Item1)
                 return WriteErrorLog(tempSchematicFile.Item2, tempSchemdrawPythonFile, dataIn);
 
@@ -98,67 +105,7 @@ namespace Markdig.Extensions.Schemdraw
             return outPutContent;
         }
 
-        private void DeleteFiles(ICollection<string> files)
-        {
-            foreach (var item in files)
-            {
-                if (!string.IsNullOrEmpty(item))
-                    File.Delete(item);
-            }
-        }
-
-        private string PrintBlock(LeafBlock block)
-        {
-            
-
-            string attr = "{";
-            foreach (var kv in block.GetAttributes().Properties)
-            {
-                attr += kv.Key + "=" + kv.Value + " ";
-            }
-            attr = "```schemdraw " +  attr.Trim() + "}";
-
-            StringBuilder sb = new StringBuilder(attr + Environment.NewLine);
-            var cnt = block.Lines.Count;
-            for (int i = 0; i < cnt; i++)
-            {
-                var item = block.Lines.Lines[i];
-                sb.AppendLine(item.ToString());
-            }
-            sb.AppendLine("```");
-            return sb.ToString();
-        }
-
-        private string? GetFilesContent(string svgFile)
-        {
-            if (svgFile is null || !File.Exists(svgFile))
-                return null;
-
-            return File.ReadAllText(svgFile);
-        }
-
-        private string RunSchemdrawCmd(string pythonFile)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = schemdrawEnvironment.PythonPath;
-            start.Arguments = pythonFile;
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            StringBuilder sb = new StringBuilder();
-            using (Process process = Process.Start(start))
-            {
-                using (StreamReader reader = process.StandardError)
-                {
-                    string result = reader.ReadToEnd();
-                    //Console.Write(result);
-                    
-                    return result;
-                }
-            }
-
-            return "";
-        }
+        
 
         /// <summary>
         /// Write the python script to generate the railroad SVG diagram.
@@ -229,6 +176,15 @@ namespace Markdig.Extensions.Schemdraw
 #nullable disable
         }
 
+
+        /// <summary>
+        /// Generate the schematic from the PythonFile  and stores the result in the outFile.
+        /// If error, return a HTML compatible ErrorLog.
+        /// </summary>
+        /// <param name="pythonFile"></param>
+        /// <param name="outFile"></param>
+        /// <param name="dataIn"></param>
+        /// <returns></returns>
         private string GenerateSchematic(string pythonFile, string outFile, LeafBlock dataIn)
         {
             string feedBack = "";
@@ -236,17 +192,46 @@ namespace Markdig.Extensions.Schemdraw
                 //Generate the schematic
                 feedBack = RunSchemdrawCmd(pythonFile);
             else
-                return "";
+                return string.Empty;
 
             if (!File.Exists(outFile) || !string.IsNullOrEmpty(feedBack))
             {
-                StringBuilder sb = new StringBuilder(feedBack);
+                StringBuilder sb = new StringBuilder($"<p style =\"color: red;\">{feedBack}</p>");
                 return WriteErrorLog(outFile, pythonFile, dataIn, sb);
             }
 
-            return "";
+            return string.Empty;
         }
 
+        /// <summary>
+        /// Execute Python File. Errors will be return, else return empty string.
+        /// </summary>
+        /// <param name="pythonFile"></param>
+        /// <returns></returns>
+        private string RunSchemdrawCmd(string pythonFile)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = schemdrawEnvironment.PythonPath;
+            start.Arguments = pythonFile;
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            StringBuilder sb = new StringBuilder();
+            using (Process process = Process.Start(start))
+            {
+                using StreamReader reader = process.StandardError;
+                return reader.ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// Generate the HTML outputs, in regard of the provided global attributes.
+        /// </summary>
+        /// <param name="attr"></param>
+        /// <param name="schematicFile"></param>
+        /// <param name="pythonFile"></param>
+        /// <param name="dataIn"></param>
+        /// <returns></returns>
         private string WriteOutput(GlobalAttributes attr, string schematicFile, string pythonFile, LeafBlock dataIn)
         {
             StringBuilder sbOut = new StringBuilder();
@@ -278,11 +263,18 @@ namespace Markdig.Extensions.Schemdraw
             return sbOut.ToString();
         }
 
+        /// <summary>
+        /// Generate a HTML compatible Error log.
+        /// </summary>
+        /// <param name="schematicFile"></param>
+        /// <param name="pythonFile"></param>
+        /// <param name="dataIn"></param>
+        /// <param name="sb"></param>
+        /// <returns></returns>
         private string WriteErrorLog(string schematicFile, string pythonFile, LeafBlock dataIn, StringBuilder sb = null)
         {
             if (sb is null)
-                sb= new StringBuilder();
- 
+                sb = new StringBuilder();
 
             sb.AppendLine("<p style=\"color: red;\"><strong> No SVG file generated.</strong></p>");
             sb.AppendLine("<p style=\"color: red;\">" + schematicFile + " fails </p>");
@@ -294,7 +286,7 @@ namespace Markdig.Extensions.Schemdraw
             if (File.Exists(pythonFile))
             {
                 sb.Append("<code style=\"color: red;\"><pre>");
-                sb.Append(File.ReadAllText(pythonFile));
+                sb.Append(File.ReadAllText(pythonFile).Replace("\r", ""));
                 sb.Append("</code></pre>");
             }
 
@@ -302,8 +294,48 @@ namespace Markdig.Extensions.Schemdraw
 
             return sb.ToString();
         }
+
+        private void DeleteFiles(ICollection<string> files)
+        {
+            foreach (var item in files)
+            {
+                if (!string.IsNullOrEmpty(item))
+                    File.Delete(item);
+            }
+        }
+
+        private string PrintBlock(LeafBlock block)
+        {
+            string attr = "{";
+            foreach (var kv in block.GetAttributes().Properties)
+            {
+                attr += kv.Key + "=" + kv.Value + " ";
+            }
+            attr = "```schemdraw " + attr.Trim() + "}";
+
+            StringBuilder sb = new StringBuilder(attr + Environment.NewLine);
+            var cnt = block.Lines.Count;
+            for (int i = 0; i < cnt; i++)
+            {
+                var item = block.Lines.Lines[i];
+                sb.AppendLine(item.ToString());
+            }
+            sb.AppendLine("```");
+            return sb.ToString();
+        }
+
+        private string? GetFilesContent(string svgFile)
+        {
+            if (svgFile is null || !File.Exists(svgFile))
+                return null;
+
+            return File.ReadAllText(svgFile);
+        }
     }
 
+    /// <summary>
+    /// Structure used to transfer information between the Handlers.
+    /// </summary>
     internal struct SchemdrawCommandLine
     {
         public SchemdrawCommandLine(string fullLine, string cleanLine, string tabs, int row)
@@ -595,7 +627,6 @@ namespace Markdig.Extensions.Schemdraw
 
     /// <summary>
     /// Handle the other cases.
-    ///
     /// </summary>
     internal class HandlerDefault : Handler
     {

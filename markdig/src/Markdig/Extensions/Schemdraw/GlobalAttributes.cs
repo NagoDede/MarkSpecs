@@ -34,7 +34,7 @@ namespace Markdig.Extensions.Schemdraw
             defaultAttributes.Add("print_python_code", "False");
             defaultAttributes.Add("print_definition_code", "False");
             defaultAttributes.Add("format", "svg");
-            defaultAttributes.Add("code_height", "400px");
+            defaultAttributes.Add("code_height", "15em");
             defaultAttributes.Add("code_width", "120ch");
         }
     }

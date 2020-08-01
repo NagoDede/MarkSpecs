@@ -1,21 +1,51 @@
-﻿# Schemdraw Implementation
+﻿# Schemdraw
 This section contains some exemples and clarification about the use of Schemdraw in Markspecs.  
 Schemdraw is Python library available on bitbucket at the following address: https://bitbucket.org/cdelker/schemdraw/src/master/  
 Description and syntax are available on https://schemdraw.readthedocs.io/en/latest/index.html  
-This last contains several exemples and we will use them as integratuib test means.
+This last contains several exemples and we will use them as integration test means.
 
 ## Some considerations
 We take credit of the Markspecs integration to remove the Python descriptions around the Schemdraw syntax.  
 Markspecs builds a default drawing (nammed __d__) and there is no need to refer to the drawing object to add elements (no need to write d.add(...)). 
-User can continue to create drawing by using the dedicated keywords "Drawing:  _id-of-drawing_ _{atttributes}_ " and "EndDrawing" to close the definition of a drawing.
+User can continue to create drawing by using the new dedicated keywords "Drawing:  _id-of-drawing_ _{atttributes}_ " and "EndDrawing" to close the definition of a drawing.
 You can refer to the _Infinite Transmission Line_ example to see these keywords in actions.  
-The Markspecs integration of Schemdraw also allows the use of Python command in the block. Alseo, refer to the _Infinite Transmission Line_ example to see this point in action.
+The Markspecs integration of Schemdraw also allows the use of Python command in the block. In to, refer to the _Infinite Transmission Line_ example to see this point in action.
 
 ## Attributes definition
-Markspecs supports the following attributes for the definition of the Drawing object.  
+Markspecs supports the following attributes for the definition of the Drawing object: 
+- unit, 
+- inches_per_unit, 
+- lblofst, 
+- fontsize, 
+- font, 
+- color, 
+- lw, 
+- ls, 
+- fill.  
+
+Refer to https://schemdraw.readthedocs.io/en/latest/usage/classes.html#schemdraw.Drawing to have more information about these keywords and how to use them.
+
 When the attributes are set to the declaration of the Schemdraw block, they will apply on the default (master) Drawing __d__.
-Else, if you define a specific Drawing, you can define new attributes to this Drawing after the creation of the Drawing by the "Drawing:" key code.  
-Supported attributes are unit, inches_per_unit, lblofst, fontsize, font, color, lw, ls, fill. Refer to https://schemdraw.readthedocs.io/en/latest/usage/classes.html#schemdraw.Drawing to have more information about them and how to use them.
+(Not yet implemented) if you define a specific Drawing, you can define new attributes to this Drawing after the creation of the Drawing by the "Drawing:" key code.  
+
+Markspecs introduces new attributes:
+- _print_python_code_ (bool). To print the content of the temporary Python code (default is False - No print).
+- _print_definition_code_ (bool). To print the content of the Schemdraw definition code (default is False - No print).
+- _format_ (string). Generate the content of the Schemdraw in dedeciated format (default is SVG)  
+    For SVG file, the generate schematic is not stored as a file. It is directly incoporated in the HTML output.
+    Other image format are not yet supported.
+- _title_ (string). Title of the generated figure, will be set in the SVG title. Not yet supported.
+- _overflow_ (string). Define if and how the scrollbars will be displayed for python and definition codes in regard of the code_height and code_width. Default value is empty, the scrollbars are not used. 
+The accepted values are:
+  - "" (empty), scrollbars are not used;
+  - hidden, the overflow is clipped, and the rest of the content will be invisible;
+  - scroll, the overflow is clipped, but a scroll-bar is added to see the rest of the content;
+  - auto,  if overflow is clipped, a scroll-bar should be added to see the rest of the content;
+  If you want to display scrollbars, _auto_ is the recommended value.
+
+- _code_height_ (string), define the height of container for the Python and Schemdraw definition code (default is 15em, roughly 15 lines).
+- _code_width_ (string), define the width of container for the Python and Schemdraw definition code (default is 120ch (characters)).
+
 
 ## Schemdraw schematics.
 ### Simple schematic
@@ -322,7 +352,7 @@ elm.Line('left')
 ### Infinite Transmission Line
 The _Infinite Transmission Line_, we can test the capacity to repeat elements thanks the introduction of Python code in the block and the definition of a new Schemdraw diagram (d1). 
 User has to know that it is a potential security all, as it open doors to Python injection code. 
-```schemdraw
+```schemdraw {print_definition_code=true print_python_code=true overflow=auto}
 Drawing: d1
 elm.Resistor()
 push
@@ -345,7 +375,7 @@ elm.DotDotDot
 ```
 
 ### OpAmp pin labeling
-```schemdraw {fontsize=12}
+```schemdraw {fontsize=12 print_definition_code=true print_python_code=true overflow=auto}
 op = elm.Opamp(label='741', lblloc='center', lblofst=0)
 elm.Line('left', xy=op.in1, l=.5)
 elm.Line('down', l=d.unit/2)
@@ -372,7 +402,7 @@ op.add_label('3', loc='in2', size=9, ofst=[-.1, .1], align=('right', 'bottom'))
 op.add_label('6', loc='out', size=9, ofst=[-.1, .1], align=('left', 'bottom'))
 ```
 ### Logic gates
-```schemdraw {unit=.5}
+```schemdraw {unit=.5 print_definition_code=true print_python_code=true overflow=auto}
 X1 = logic.Xor
 logic.Dot
 A = logic.Dot(xy=X1.in1)
@@ -404,9 +434,8 @@ logic.Line('up', xy=A2.out, toy=O1.in2)
 logic.Line('right', xy=X2.out, tox=O1.out, rgtlabel='$S$')
 ```
 
-
 ### Superheterodyne Receiver
-```schemdraw {fontsize=12}
+```schemdraw {fontsize=12 print_definition_code=true print_python_code=true overflow=auto}
 dsp.Antenna
 dsp.Line('right', l=d.unit/4)
 filt1 = dsp.Filter(response='bp', botlabel='RF filter\n#1', anchor='W', lblofst=.2, fill='thistle')
@@ -428,13 +457,13 @@ dsp.Arrow('right', xy=demod.E, l=d.unit/3)
 ```
 
 ### Styles
-```schemdraw{inches_per_unit=.5 unit=3}
+```schemdraw{inches_per_unit=.5 unit=3 print_definition_code=true print_python_code=true overflow=auto}}
 for i, color in enumerate(['red', 'orange', 'yellow', 'yellowgreen', 'green', 'blue', 'indigo', 'violet']):
     d.add(elm.Resistor(label='R{}'.format(i), theta=45*i, color=color))
 ```
 
 ### Integrated Circuits
-```schemdraw
+```schemdraw {print_definition_code=true print_python_code=true overflow=auto}
 T = elm.Ic(pins=[elm.IcPin(name='TRG', side='left', pin='2'), elm.IcPin(name='THR', side='left', pin='6'),elm.IcPin(name='DIS', side='left', pin='7'),elm.IcPin(name='CTL', side='right', pin='5'),elm.IcPin(name='OUT', side='right', pin='3'),elm.IcPin(name='RST', side='top', pin='4'),elm.IcPin(name='Vcc', side='top', pin='8'),elm.IcPin(name='GND', side='bot', pin='1'),],edgepadW=.5,edgepadH=1,pinspacing=2,leadlen=1,label='555')
 
 BOT = elm.Ground(xy=T.GND)
