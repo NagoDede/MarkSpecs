@@ -1,0 +1,6 @@
+﻿#Start of header
+import sys
+import zipimport
+importer = zipimport.zipimporter("${schemdraw_path_zip}") 
+mod=importer.load_module('schemdraw')
+#End of header

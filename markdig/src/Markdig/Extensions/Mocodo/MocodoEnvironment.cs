@@ -46,7 +46,7 @@ namespace Markdig.Extensions.Mocodo
             try
             {
                 this.PythonPath = RetrievePythonPathFromEnvironmentVariable();
-                this.MocodoPath = RetriveMocodopath();
+                this.MocodoPath = RetrieveMocodopath();
             }
             catch (NullReferenceException)
             {
@@ -135,7 +135,7 @@ namespace Markdig.Extensions.Mocodo
         /// Retrieve Moco in the assembly.
         /// </summary>
         /// <returns></returns>
-        private static string RetriveMocodopath()
+        private static string RetrieveMocodopath()
         {
             string mocodoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"vendors\mocodo", "mocodo.py");
             if (File.Exists(mocodoPath))

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace Markdig.Extensions.Mocodo
 {/// <summary>
@@ -207,7 +208,7 @@ namespace Markdig.Extensions.Mocodo
                         else if (expectedType.Equals("float"))
                         {
                             //check if the value is well an integer
-                            if (float.TryParse(keyValue.Value, out _))
+                            if (float.TryParse(keyValue.Value.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
                                 identifiedAttributes.Add(keyValue.Key, keyValue.Value);
                             //else ignore the command
                         }
